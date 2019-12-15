@@ -1,7 +1,7 @@
 import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
-import Main from './Main';
+import Main from './components/Main';
 import './App.css';
 
 const App = () => (

@@ -5,6 +5,7 @@ import GoogleButton from 'react-google-button';
 import { toast } from 'react-toastify';
 
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import Api from '../network/Api';
 
 import './Main.css';
 
@@ -15,7 +16,7 @@ const Main = () => {
 
     const [ targetMapUrl, setTargetMapUrl ] = useState('');
     const [ token, setToken ] = useState('');
-    const [ authorization, setAuthorization ] = useState(null);
+    const [ api, setApi ] = useState(null);
 
     const responseGoogle = (response) => {
         console.log('accessToken', response.accessToken);
@@ -31,7 +32,7 @@ const Main = () => {
             return response.json();
         }).then((response) => {
             console.log(response);
-            setAuthorization('Token ' + response.token)
+            setApi(new Api('Token ' + response.token));
         }).catch((error) => {
             toast.error('Error');
             console.error(error);
@@ -53,21 +54,15 @@ const Main = () => {
     };
 
     const handleSubmit = () => {
-        setAuthorization(new String('Token ' + token));
+        setApi(new Api('Token ' + token));
     };
 
     useEffect(() => {
-        if (authorization) {
-            fetch(process.env.REACT_APP_MAPOTIC_API + '/auth/me/', {
-                method: "GET",
-                headers: { accept: 'application/json',  authorization },
-            }).then((response) => {
-                if (!response.ok) {
-                    throw response;
+        if (api) {
+            api.fetchJson('/auth/me/', "GET").then((response) => {
+                if (!response) {
+                    return;
                 }
-                return response.json();
-            }).then((response) => {
-                console.log(response);
                 if (response.maps && response.maps.my) {
                     if (response.maps.my.find(map => map.url === targetMapUrl)) {
                         toast.success('Success');
@@ -77,13 +72,9 @@ const Main = () => {
                 } else {
                     toast.error('No maps for user.')
                 }
-            }).catch((error) => {
-                toast.error('Error');
-                console.error(error);
-            }).finally(() => {
             });
         }
-    }, [ authorization ]);
+    }, [ api ]);
 
     return (
         <div className="__Main__">
