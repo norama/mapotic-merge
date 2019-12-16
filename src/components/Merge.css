@@ -1,0 +1,23 @@
+.__Merge__ {
+    display: flex;
+}
+
+.__Merge__ h5 {
+    margin-bottom: 50px;
+    border: 1px solid darkgray;
+    padding: 10px;
+}
+
+.__Merge__ .merge-form {
+    width: 600px;
+    margin: 50px auto;
+}
+
+.__Merge__ .merge-label {
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+.__Merge__ .btn-primary.disabled, .__Merge__ .btn-primary:disabled {
+    cursor: not-allowed;
+}

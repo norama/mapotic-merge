@@ -1,0 +1,8 @@
+.__Login__ {
+    display: flex;
+}
+
+.__Login__ .login-form {
+    width: 600px;
+    margin: 50px auto;
+}

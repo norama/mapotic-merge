@@ -6,7 +6,7 @@ class Api {
         this.authorization = authorization;
     }
 
-    fetchJson(url, method, body) {
+    fetchJson(url, method="GET", body="") {
         return fetch(process.env.REACT_APP_MAPOTIC_API + url, {
             method,
             headers: { accept: 'application/json', authorization: this.authorization },
