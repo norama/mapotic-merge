@@ -60,6 +60,8 @@ const Merge = ({ api, targetMap }) => {
             })
         ))).then((newCategories) => {
             console.log(newCategories);
+            toast.success('Categories added: ' + newCategories.map((category) => (category.name.en)));
+            setTargetCategories((categories) => ([...categories, ...newCategories]));
         });
     };
 
