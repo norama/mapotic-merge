@@ -7,6 +7,11 @@
     margin: 50px auto;
 }
 
+.__Login__ .login-form legend {
+    margin-bottom: 20px;
+    color: #59646e;
+}
+
 .__Login__ .login-form #email {
     margin-top: 40px;
     margin-bottom: 10px;

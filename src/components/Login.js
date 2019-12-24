@@ -58,7 +58,7 @@ const Login = ({ onLogin }) => {
             if (response.maps && response.maps.my) {
                 const targetMap = response.maps.my.find(map => map.url === targetMapUrl);
                 if (targetMap) {
-                    onLogin(api, targetMap);
+                    onLogin(response.email, api, targetMap);
                 } else {
                     toast.error('URL: ' + targetMapUrl + ' is not among user maps.');
                 }
@@ -71,6 +71,7 @@ const Login = ({ onLogin }) => {
     return (
         <div className="__Login__">
             <Form className="login-form">
+                <legend>Mapotic Merge</legend>
                 <FormGroup>
                     <Input type="url" name="targetMapUrl" value={targetMapUrl} onChange={handleTargetMapUrlChange} id="targetMapUrl" placeholder="Target map URL" />
                 </FormGroup>

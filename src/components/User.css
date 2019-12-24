@@ -1,0 +1,16 @@
+.__User__ {
+    position: fixed;
+    top: 5px;
+    right: 30px;
+    display: flex;
+}
+
+.__User__ .email {
+    padding: 20px;
+    text-align: center;
+    color: #59646e;
+}
+
+.__User__ .logout-button {
+    margin-left: 10px;
+}

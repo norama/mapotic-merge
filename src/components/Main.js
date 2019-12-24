@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+
+import Api from '../network/Api';
 
 import Login from './Login';
+import User from './User';
 import Merge from './Merge';
+
+const month = 30 * 24 * 60 * 60;
+
+const CookieOptions = {
+    path: '/',
+    maxAge: month
+};
 
 const Main = () => {
 
-    const [ api, setApi ] = useState(null);
-    const [ targetMap, setTargetMap ] = useState(null);
+    const [ cookies, setCookie, removeCookie ] = useCookies(['mapoticEmail', 'mapoticAuth', 'mapoticTargetMap']);
 
-    const handleLogin = (api, targetMap) => {
-        setApi(api);
-        setTargetMap(targetMap);
+    const handleLogin = (email, api, targetMap) => {
+        setCookie('mapoticEmail', email, CookieOptions);
+        setCookie('mapoticAuth', api.authorization, CookieOptions);
+        setCookie('mapoticTargetMap', targetMap, CookieOptions);
     };
 
-    return api && targetMap ? (
-        <Merge api={api} targetMap={targetMap} />
+    const handleLogout = () => {
+        removeCookie('mapoticEmail');
+        removeCookie('mapoticAuth');
+        removeCookie('mapoticTargetMap');
+    }
+
+    return cookies.mapoticEmail && cookies.mapoticAuth && cookies.mapoticTargetMap ? (
+        <>
+            <User email={cookies.mapoticEmail} onLogout={handleLogout} />
+            <Merge api={new Api(cookies.mapoticAuth)} targetMap={cookies.mapoticTargetMap} />
+        </>
     ) : (
         <Login onLogin={handleLogin} />
     );
