@@ -51,7 +51,7 @@ const Login = ({ onLogin }) => {
     };
 
     const handleTargetMap = (api) => {
-        api.fetchJson('/auth/me/').then((response) => {
+        api.getJson('/auth/me/').then((response) => {
             if (!response) {
                 return;
             }
