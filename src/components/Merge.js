@@ -24,9 +24,13 @@ const Merge = ({ api, targetMap }) => {
     const [ sourceCategories, setSourceCategories ] = useState(null);
     const [ sourceAttributes, setSourceAttributes ] = useState(null);
     const [ selectedCategories, setSelectedCategories ] = useState([]);
+    const [ loading, setLoading ] = useState(false);
 
-    const handleChange = (event) => {
+    const handleSourceMapUrlChange = (event) => {
         setSourceMapUrl(event.target.value);
+        setSourceCategories(null);
+        setSourceAttributes(null);
+        setSelectedCategories([]);
     };
 
     const handleCategoriesChange = (event) => {
@@ -182,20 +186,23 @@ const Merge = ({ api, targetMap }) => {
     const handleMerge = (event) => {
         event.preventDefault();
 
-        loadTarget().then(({ targetAttributes, targetCategories }) => {
+        setLoading(true);
+        return loadTarget().then(({ targetAttributes, targetCategories }) => {
             console.log('targetAttributes', targetAttributes);
             console.log('targetCategories', targetCategories);
-            addAttributes(targetAttributes, targetCategories).then(({ attributes, attributeMap }) => {
+            return addAttributes(targetAttributes, targetCategories).then(({ attributes, attributeMap }) => {
                 console.log('Missing attributes added.');
                 console.log('attributeMap', JSON.stringify(attributeMap));
                 const newCategories = selectedCategories.filter((category) => (
                     !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, category))
                 )));
-                addCategories(newCategories, attributes, attributeMap).then((categories) => {
+                return addCategories(newCategories, attributes, attributeMap).then((categories) => {
                     console.log('Missing categories added.', categories);
                     toast.success('Categories added: ' + categories.map((category) => (category.name.en)));
                 })
             });
+        }).then(() => {
+            setLoading(false);
         });
     };
 
@@ -209,15 +216,15 @@ const Merge = ({ api, targetMap }) => {
 
                 <FormGroup>
                     <InputGroup>
-                        <Input type="url" name="sourceMapUrl" value={sourceMapUrl} onChange={handleChange} id="sourceMapUrl" placeholder="source map URL" />
-                        <InputGroupAddon addonType="append"><Button onClick={handleLoad}>Load categories</Button></InputGroupAddon>
+                        <Input type="url" name="sourceMapUrl" value={sourceMapUrl} onChange={handleSourceMapUrlChange} id="sourceMapUrl" placeholder="source map URL" disabled={loading} />
+                        <InputGroupAddon addonType="append"><Button onClick={handleLoad} disabled={loading}>Load categories</Button></InputGroupAddon>
                     </InputGroup>
                 </FormGroup>
 
                 { sourceCategories ?
                     <FormGroup>
                         <Label for="selectCategories">Select Multiple Categories</Label>
-                        <Input type="select" onChange={handleCategoriesChange} size={""+sourceCategories.length} name="selectCategories" id="selectCategories" multiple>
+                        <Input type="select" onChange={handleCategoriesChange} size={""+sourceCategories.length} name="selectCategories" id="selectCategories" disabled={loading} multiple>
                         { sourceCategories.map((category) => (
                             <option key={category.id} value={category.id}>{category.name.en}</option>
                         ))}
@@ -228,7 +235,7 @@ const Merge = ({ api, targetMap }) => {
                 { sourceCategories ?
                     <FormGroup>
                         <div className="merge-label">Add places of selected categories in source map to target map.</div>
-                        <Button type="button" color="primary" size="lg" onClick={handleMerge} disabled={selectedCategories.length === 0} name="merge" id="merge">MERGE</Button>
+                        <Button type="button" color="primary" size="lg" onClick={handleMerge} disabled={loading || (selectedCategories.length === 0)} name="merge" id="merge">MERGE</Button>
                     </FormGroup>
                 : null }
             </Form>
