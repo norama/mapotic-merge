@@ -20,8 +20,6 @@ const PARENT_ATTRIBUTE = {
 
 const Merge = ({ api, targetMap }) => {
 
-    const [ targetCategories, setTargetCategories ] = useState(null);
-    const [ targetAttributes, setTargetAttributes ] = useState(null);
     const [ sourceMapUrl, setSourceMapUrl ] = useState('');
     const [ sourceCategories, setSourceCategories ] = useState(null);
     const [ sourceAttributes, setSourceAttributes ] = useState(null);
@@ -67,31 +65,27 @@ const Merge = ({ api, targetMap }) => {
     };
 
     const loadTargetAttributes = () => {
-        return loadAttributes(targetMap.id).then((attributes) => {
-            console.log('targetAttributes', attributes);
-            setTargetAttributes(attributes);
-            return attributes;
-        });
+        return loadAttributes(targetMap.id);
     };
 
     const loadTargetCategories = () => {
-        return loadCategories(targetMap.id).then((categories) => {
-            console.log('targetCategories', categories);
-            setTargetCategories(categories);
-            return categories;
-        });
+        return loadCategories(targetMap.id);
     }
 
     const loadTarget = () => {
-        return loadTargetAttributes().then(loadTargetCategories);
+        return loadTargetAttributes().then((targetAttributes) => {
+            return loadTargetCategories().then((targetCategories) => ({
+                targetAttributes,
+                targetCategories
+            }));
+        });
     }
 
     const handleLoad = () => {
         loadSource();
-        loadTarget();
     };
 
-    const addAttributes = () => {
+    const addAttributes = (targetAttributes) => {
 
         let attributeMap = {};
 
@@ -167,24 +161,26 @@ const Merge = ({ api, targetMap }) => {
         ))).then((newCategories) => {
             console.log(newCategories);
             return newCategories;
-        }).then((newCategories) => {
-            return loadTargetCategories().then(() => (newCategories));
         });
     };
 
     const handleMerge = (event) => {
         event.preventDefault();
 
-        addAttributes().then(({ attributes, attributeMap }) => {
-            console.log('Missing attributes added.');
-            console.log('attributeMap', JSON.stringify(attributeMap));
-            const newCategories = selectedCategories.filter((category) => (
-                !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, category))
-            )));
-            addCategories(newCategories, attributes, attributeMap).then((categories) => {
-                console.log('Missing categories added.', categories);
-                toast.success('Categories added: ' + categories.map((category) => (category.name.en)));
-            })
+        loadTarget().then(({ targetAttributes, targetCategories }) => {
+            console.log('targetAttributes', targetAttributes);
+            console.log('targetCategories', targetCategories);
+            addAttributes(targetAttributes).then(({ attributes, attributeMap }) => {
+                console.log('Missing attributes added.');
+                console.log('attributeMap', JSON.stringify(attributeMap));
+                const newCategories = selectedCategories.filter((category) => (
+                    !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, category))
+                )));
+                addCategories(newCategories, attributes, attributeMap).then((categories) => {
+                    console.log('Missing categories added.', categories);
+                    toast.success('Categories added: ' + categories.map((category) => (category.name.en)));
+                })
+            });
         });
     };
 
