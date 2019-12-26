@@ -85,7 +85,7 @@ const Merge = ({ api, targetMap }) => {
         loadSource();
     };
 
-    const addAttributes = (targetAttributes) => {
+    const addAttributes = (targetAttributes, targetCategories) => {
 
         let attributeMap = {};
 
@@ -118,7 +118,15 @@ const Merge = ({ api, targetMap }) => {
             for (let i=0; i < newAttributes.length; ++i) {
                 attributeMap[newAttributes[i].id] = newTargetAttributes[i].id;
             }
-        }).then(loadTargetAttributes).then((attributes) => ({
+            return newTargetAttributes;
+        }).then((newTargetAttributes) => (
+            // remove from all categories (to be added to new categories only)
+            Promise.all(targetCategories.map((category) => (
+                chain(newTargetAttributes.map((attribute) => (
+                    api.deleteJson('/maps/' + targetMap.id + '/categories/' + category.id + '/attributes/' + attribute.id +'/')
+                )))
+            )))
+        )).then(loadTargetAttributes).then((attributes) => ({
             attributes,
             attributeMap
         }));
@@ -127,6 +135,10 @@ const Merge = ({ api, targetMap }) => {
     const addCategories = (categories, attributes, attributeMap) => {
         const categoryBaseUrl = '/maps/' + targetMap.id + '/categories/';
         return chain(categories.map((category) => (
+
+            // workaround: subsequent POST category requests cause error 500 on server
+            api.getJson(categoryBaseUrl).then(() => (
+
             api.postJson(categoryBaseUrl, {
                 name: category.name,
                 color: category.color,
@@ -158,6 +170,9 @@ const Merge = ({ api, targetMap }) => {
                     ))).then(() => (newCategory));
                 });
             })
+
+            // end of workaround
+            ))
         ))).then((newCategories) => {
             console.log(newCategories);
             return newCategories;
@@ -170,7 +185,7 @@ const Merge = ({ api, targetMap }) => {
         loadTarget().then(({ targetAttributes, targetCategories }) => {
             console.log('targetAttributes', targetAttributes);
             console.log('targetCategories', targetCategories);
-            addAttributes(targetAttributes).then(({ attributes, attributeMap }) => {
+            addAttributes(targetAttributes, targetCategories).then(({ attributes, attributeMap }) => {
                 console.log('Missing attributes added.');
                 console.log('attributeMap', JSON.stringify(attributeMap));
                 const newCategories = selectedCategories.filter((category) => (

@@ -17,6 +17,5 @@ function settingsEqual(settings1, settings2) {
 export function attributeEqual(attr1, attr2) {
     return attr1.name.en === attr2.name.en &&
         attr1.attribute_type === attr2.attribute_type &&
-        attr1.icon === attr2.icon &&
         settingsEqual(attr1.settings, attr2.settings);
 }
