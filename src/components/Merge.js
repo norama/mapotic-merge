@@ -23,6 +23,7 @@ const Merge = ({ api, targetMap }) => {
     const [ sourceMapUrl, setSourceMapUrl ] = useState('');
     const [ sourceCategories, setSourceCategories ] = useState(null);
     const [ sourceAttributes, setSourceAttributes ] = useState(null);
+    const [ sourcePlaces, setSourcePlaces ] = useState(null);
     const [ selectedCategories, setSelectedCategories ] = useState([]);
     const [ loading, setLoading ] = useState(false);
 
@@ -53,6 +54,10 @@ const Merge = ({ api, targetMap }) => {
                         console.log('sourceCategories', categories);
                         setSourceCategories(categories);
                     });
+                }).then(() => {
+                    return loadPlaces(map.id).then((places) => {
+                        setSourcePlaces(places);
+                    });
                 });
             });
         } else {
@@ -67,6 +72,10 @@ const Merge = ({ api, targetMap }) => {
     const loadCategories = (mapId) => {
         return api.getJson('/maps/' + mapId + '/categories/');
     };
+
+    const loadPlaces = (mapId) => {
+        return api.getJson('/maps/' + mapId + '/pois.geojson/').then((response) => (response.features));
+    }
 
     const loadTargetAttributes = () => {
         return loadAttributes(targetMap.id);
@@ -183,6 +192,41 @@ const Merge = ({ api, targetMap }) => {
         });
     };
 
+    // selection algorithm to keep number of places under control
+    const selectPlaces = (categories) => {
+        const count = 3;
+        const catIds = new Set(categories.map((category) => (category.id)));
+        const places = sourcePlaces.filter((place) => (catIds.has(place.properties.category)));
+        if (10 * count > places.length) {
+            return places;
+        }
+        const selectedIndexes = [];
+        while (selectedIndexes.length < count) {
+            const index = Math.floor(Math.random() * places.length);
+            if (!selectedIndexes.includes(index)) {
+                selectedIndexes.push(index);
+            }
+        }
+        return selectedIndexes.map((i) => (places[i]));
+    };
+
+    const addPlaces = (categories) => {
+        const places = selectPlaces(categories);
+        console.log('random places to be added', places);
+        const content = 'Nedamov,Lom,14.55639,50.53756,202967,xxx,Suitable for nudists\nNedamov,Lom,14.55639,50.53756,202967,xxx,Suitable for nudists';
+
+        const importBaseUrl = '/maps/' + targetMap.id + '/datasource/';
+
+        let fd = new FormData();
+        fd.append('has_header', false);
+
+        fd.append('source_file', new File([content], 'data.csv'));
+        return api.postDataSource(importBaseUrl, fd).then((response) => {
+            console.log('DS', response);
+            return places;
+        })
+    };
+
     const handleMerge = (event) => {
         event.preventDefault();
 
@@ -199,6 +243,10 @@ const Merge = ({ api, targetMap }) => {
                 return addCategories(newCategories, attributes, attributeMap).then((categories) => {
                     console.log('Missing categories added.', categories);
                     toast.success('Categories added: ' + categories.map((category) => (category.name.en)));
+                }).then(() => {
+                    return addPlaces(selectedCategories).then((places) => {
+                        console.log('places', places);
+                    });
                 })
             });
         }).then(() => {
