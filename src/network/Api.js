@@ -37,6 +37,10 @@ class Api {
         return this.fetchJson(url, "PUT", body);
     }
 
+    patchJson(url, body) {
+        return this.fetchJson(url, "PATCH", body);
+    }
+
     deleteJson(url) {
         return this.fetchJson(url, "DELETE").then((res) => {
             console.log('res', res);
@@ -60,16 +64,8 @@ class Api {
         });
     }
 
-    getDataSource(url) {
-        return this.fetchDataSource(url);
-    }
-
     postDataSource(url, body) {
         return this.fetchDataSource(url, "POST", body);
-    }
-
-    patchJson(url, body) {
-        return this.fetchDataSource(url, "PATCH", body);
     }
 }
 

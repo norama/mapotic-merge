@@ -213,7 +213,9 @@ const Merge = ({ api, targetMap }) => {
     const addPlaces = (categories) => {
         const places = selectPlaces(categories);
         console.log('random places to be added', places);
-        const content = 'Nedamov,Lom,14.55639,50.53756,202967,xxx,Suitable for nudists\nNedamov,Lom,14.55639,50.53756,202967,xxx,Suitable for nudists';
+        const content =
+            'Nedamov 1,Lom,14.65639,50.53756,202967,xxx,Suitable for nudists,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg'+'\n'+
+            'Nedamov 2,Lom,14.55639,50.58756,202968,,Suitable for nudists,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg';
 
         const importBaseUrl = '/maps/' + targetMap.id + '/datasource/';
 
@@ -223,7 +225,63 @@ const Merge = ({ api, targetMap }) => {
         fd.append('source_file', new File([content], 'data.csv'));
         return api.postDataSource(importBaseUrl, fd).then((response) => {
             console.log('DS', response);
-            return places;
+            const importId = response.id;
+            return api.patchJson(importBaseUrl + '/' + importId + '/', {
+                    "definition": [
+                      {
+                        "type": "name",
+                        "name": "Název místa"
+                      },
+                      {
+                        "type": "category",
+                        "name": "Kategorie"
+                      },
+                      {
+                        "type": "lon",
+                        "name": "Zeměpisná délka"
+                      },
+                      {
+                        "type": "lat",
+                        "name": "Zeměpisná šířka"
+                      },
+                      {
+                        "type": "id",
+                        "name": "ID záznamu"
+                      },
+                      {
+                        "type": "attribute",
+                        "name": "__Parent__",
+                        "id": 17535
+                      },
+                      {
+                        "type": "attribute",
+                        "name": "Nuda pláž",
+                        "id": 17540
+                      },
+                      {
+                        "type": "image_url",
+                        "name": "Adresa obrázku"
+                      }
+                    ]
+            }).then(() => {
+                return api.getJson(importBaseUrl + '/' + importId + '/analyze/').then((response) => {
+                    console.log('analyze', response);
+                    if (response && response.allow_import && (response.content_errors.length === 0) && (response.definition_errors.length === 0)) {
+                        return api.postJson(importBaseUrl + '/' + importId + '/start/').then(() => new Promise((resolve) => {
+                            const statusInterval = setInterval(() => {
+                                api.getJson(importBaseUrl + '/' + importId + '/status/').then((response) => {
+                                    console.log('status', response);
+                                    console.log('progess', response.progress);
+                                    if (response.progress === 100) {
+                                        clearInterval(statusInterval);
+                                        resolve(places);
+                                    }
+                                });
+                            }, 3000);
+                        }));
+                    }
+                });
+            })
         })
     };
 
