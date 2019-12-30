@@ -3,9 +3,13 @@
 }
 
 .__Merge__ h5 {
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     border: 1px solid darkgray;
     padding: 10px;
+}
+
+.__Merge__ .sourceMapUrl {
+    margin-top: 40px;
 }
 
 .__Merge__ .merge-form {
@@ -18,7 +22,17 @@
     margin-bottom: 10px;
 }
 
-.__Merge__ .btn-primary.disabled, .__Merge__ .btn-primary:disabled {
+.__Merge__ .merge {
+    margin-top: 30px;
+}
+
+.__Merge__ .undo {
+    position: fixed;
+    bottom: 5px;
+    right: 30px;
+}
+
+.__Merge__ .btn.disabled, .__Merge__ .btn:disabled {
     cursor: not-allowed;
 }
 

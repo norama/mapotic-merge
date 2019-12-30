@@ -251,6 +251,13 @@ class Mapotic {
             });
         });
     }
+
+    deletePlaces = (places) => {
+        const baseUrl = '/maps/' + this.mapId + '/pois/';
+        return Promise.all(places.map((place) => (
+            this.api.deleteJson(baseUrl + place.id + '/')
+        )));
+    };
 }
 
 export default Mapotic;

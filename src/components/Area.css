@@ -1,0 +1,10 @@
+.__Area__ {
+    display: flex;
+    padding: 20px;
+    border: 1px solid darkgray;
+}
+
+.__Area__ .lon {
+    margin-left: 20px;
+    margin-right: 40px;
+}
