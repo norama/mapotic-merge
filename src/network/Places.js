@@ -1,5 +1,7 @@
 import { BASE_DEFINITION, PARENT_ATTRIBUTE } from './Constants';
 
+import { attributeEqual } from '../util/equal';
+
 class Places {
 
     constructor(places, mapId, mapSlug, attributeMap) {
@@ -24,9 +26,11 @@ class Places {
         this.places.forEach((place) => {
             place.attributes_values.forEach((attr) => {
                 const attribute = attr.attribute;
-                if (!ids.has(attribute.id)) {
-                    definition.push(this.attributeDefinition(attribute));
-                    ids.add(attribute.id);
+                if (!attributeEqual(attribute, PARENT_ATTRIBUTE)) {
+                    if (!ids.has(attribute.id)) {
+                        definition.push(this.attributeDefinition(attribute));
+                        ids.add(attribute.id);
+                    }
                 }
             })
         });
@@ -36,6 +40,11 @@ class Places {
 
     id(place) {
         return this.mapId * 100000000 + place.id;
+    }
+
+    // TODO
+    rating(place) {
+        return place.rating.count ? Math.min(place.rating.count, 5) : 1
     }
 
     videoLink(value) {
@@ -80,7 +89,7 @@ class Places {
                 place.point.coordinates[0],
                 place.point.coordinates[1],
                 this.id(place),
-                place.rating.count ? place.rating.count : 1,
+                this.rating(place),
                 place.image.image.medium
             ];
 

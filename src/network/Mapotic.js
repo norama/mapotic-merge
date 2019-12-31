@@ -42,9 +42,12 @@ class Mapotic {
     };
 
     extendAttributeMap = (attributeMap, sourceAttribute, targetAttribute) => {
-        const sourceAttributeId = attributeEqual(sourceAttribute, PARENT_ATTRIBUTE) ?
-            PARENT_ATTRIBUTE.id : sourceAttribute.id;
-        attributeMap[sourceAttributeId] = targetAttribute.id;
+        if (attributeEqual(sourceAttribute, PARENT_ATTRIBUTE)) {
+            attributeMap[sourceAttribute.id] = PARENT_ATTRIBUTE.id;
+            attributeMap[PARENT_ATTRIBUTE.id] = targetAttribute.id;
+        } else {
+            attributeMap[sourceAttribute.id] = targetAttribute.id;
+        }
     };
 
     mergeAttributes = (attributes, targetAttributes, targetCategories) => {
@@ -105,10 +108,13 @@ class Mapotic {
                 color: category.color,
                 icon: category.icon
             }).then((newCategory) => {
-                const attributeIds = category.attributes.map((a) => (attributeMap[a]));
 
-                // ensure parent is among attributes and put it to the end
-                const parentAttribute = attributes.find((attribute) => (attribute.name.en === PARENT_ATTRIBUTE.name.en));
+                // category target attribute ids without parent
+                let attributeIds = category.attributes.map((a) => (attributeMap[a]));
+                attributeIds = attributeIds.filter((id) => (id !== PARENT_ATTRIBUTE.id));
+
+                // add category target parent attribute ir to the end
+                const parentAttribute = attributes.find((attribute) => (attributeEqual(attribute, PARENT_ATTRIBUTE)));
                 const index = attributeIds.indexOf(parentAttribute.id);
                 if (index >= 0) {
                     // shift to end
@@ -219,80 +225,6 @@ class Mapotic {
             console.log('data', d.data);
             return this.doImport(d.definition, d.data);
         });
-
-
-        /*
-        const content =
-            'Nedamov 1,Lom,14.65639,50.53756,202967,xxx,Suitable for nudists,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg'+'\n'+
-            'Nedamov 2,Centrum,14.55639,50.58756,202968,,,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg';
-
-        const importBaseUrl = '/maps/' + this.mapId + '/datasource/';
-
-        let fd = new FormData();
-        fd.append('has_header', false);
-
-        fd.append('source_file', new File([content], 'data.csv'));
-        return this.api.postDataSource(importBaseUrl, fd).then((response) => {
-            console.log('DS', response);
-            const importId = response.id;
-            return this.api.patchJson(importBaseUrl + '/' + importId + '/', {
-                    "definition": [
-                      {
-                        "type": "name",
-                        "name": "Název místa"
-                      },
-                      {
-                        "type": "category",
-                        "name": "Kategorie"
-                      },
-                      {
-                        "type": "lon",
-                        "name": "Zeměpisná délka"
-                      },
-                      {
-                        "type": "lat",
-                        "name": "Zeměpisná šířka"
-                      },
-                      {
-                        "type": "id",
-                        "name": "ID záznamu"
-                      },
-                      {
-                        "type": "attribute",
-                        "name": "__Parent__",
-                        "id": 17600
-                      },
-                      {
-                        "type": "attribute",
-                        "name": "Nuda pláž",
-                        "id": 17598
-                      },
-                      {
-                        "type": "image_url",
-                        "name": "Adresa obrázku"
-                      }
-                    ]
-            }).then(() => {
-                return this.api.getJson(importBaseUrl + '/' + importId + '/analyze/').then((response) => {
-                    console.log('analyze', response);
-                    if (response && response.allow_import && (response.content_errors.length === 0) && (response.definition_errors.length === 0)) {
-                        return this.api.postJson(importBaseUrl + '/' + importId + '/start/').then(() => new Promise((resolve) => {
-                            const statusInterval = setInterval(() => {
-                                this.api.getJson(importBaseUrl + '/' + importId + '/status/').then((response) => {
-                                    console.log('status', response);
-                                    console.log('progess', response.progress);
-                                    if (response.progress === 100) {
-                                        clearInterval(statusInterval);
-                                        resolve(importId);
-                                    }
-                                });
-                            }, 3000);
-                        }));
-                    }
-                });
-            })
-        });
-        */
     };
 
     merge = (sourceMap, selectedCategories, area) => {

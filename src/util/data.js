@@ -5,7 +5,8 @@ function escape(item) {
     if (item.indexOf(',') === -1) {
         return item;
     }
-    item = item.replace(/\"/g, '""');
+    // item = item.replace(/\"/g, '""');
+    item = item.replace(/\"/g, "'");
     return '"' + item + '"';
 }
 
