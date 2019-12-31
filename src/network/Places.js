@@ -80,7 +80,7 @@ class Places {
                 place.point.coordinates[0],
                 place.point.coordinates[1],
                 this.id(place),
-                place.rating.count,
+                place.rating.count ? place.rating.count : 1,
                 place.image.image.medium
             ];
 

@@ -4,6 +4,8 @@ import { chain } from '../util/promise';
 
 import { distance2 } from '../util/geo';
 
+import { toCsv } from '../util/data';
+
 import { PARENT_ATTRIBUTE } from './Constants';
 import Places from './Places';
 
@@ -165,24 +167,45 @@ class Mapotic {
         
         // filter by category
         let places = this.filterPlacesByCategories(sourcePlaces, categories);
+
+        // filter by area
         return this.filterPlacesByArea(places, area);
-
-
-        /*
-        const count = 3;
-        if (10 * count > places.length) {
-            return places;
-        }
-        const selectedIndexes = [];
-        while (selectedIndexes.length < count) {
-            const index = Math.floor(Math.random() * places.length);
-            if (!selectedIndexes.includes(index)) {
-                selectedIndexes.push(index);
-            }
-        }
-        return selectedIndexes.map((i) => (places[i]));
-        */
     };
+
+    doImport = (definition, data) => {
+
+        const importBaseUrl = '/maps/' + this.mapId + '/datasource/';
+
+        let fd = new FormData();
+        fd.append('has_header', false);
+
+        fd.append('source_file', new File([toCsv(data)], 'data.csv'));
+        return this.api.postDataSource(importBaseUrl, fd).then((response) => {
+            console.log('DataSource posted', response);
+            const importId = response.id;
+            return this.api.patchJson(importBaseUrl + '/' + importId + '/', {
+                definition
+            }).then(() => {
+                return this.api.getJson(importBaseUrl + '/' + importId + '/analyze/').then((response) => {
+                    console.log('analyze', response);
+                    if (response && response.allow_import && (response.content_errors.length === 0) && (response.definition_errors.length === 0)) {
+                        return this.api.postJson(importBaseUrl + '/' + importId + '/start/').then(() => new Promise((resolve) => {
+                            const statusInterval = setInterval(() => {
+                                this.api.getJson(importBaseUrl + '/' + importId + '/status/').then((response) => {
+                                    console.log('status', response);
+                                    console.log('progess', response.progress);
+                                    if (response.progress === 100) {
+                                        clearInterval(statusInterval);
+                                        resolve(importId);
+                                    }
+                                });
+                            }, 3000);
+                        }));
+                    }
+                });
+            })
+        });
+    }
 
     mergePlaces = (sourceMap, selectedCategories, area, attributeMap) => {
         
@@ -194,7 +217,7 @@ class Mapotic {
             const d = p.forImport();
             console.log('definition', d.definition);
             console.log('data', d.data);
-            return places;
+            return this.doImport(d.definition, d.data);
         });
 
 
@@ -296,7 +319,7 @@ class Mapotic {
         });
     }
 
-    undoMerge = (importId) => {
+    undoImport = (importId) => {
         return this.api.deleteJson('/maps/' + this.mapId + '/datasource/' + importId + '/created_geo/')
     };
 }

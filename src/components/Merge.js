@@ -132,7 +132,7 @@ const Merge = ({ api, targetMap }) => {
 
                 { sourceMap ?
                     <FormGroup className="undo">
-                        <Button type="button" color="secondary" outline onClick={handleUndo} title="Delete places added in last MERGE" disabled={loading || !addedPlaces} name="undo" id="undo">UNDO</Button>
+                        <Button type="button" color="secondary" outline onClick={handleUndo} title="Delete places added in last MERGE" disabled={loading || !importId} name="undo" id="undo">UNDO</Button>
                     </FormGroup>
                 : null }
             </Form>
