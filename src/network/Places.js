@@ -38,13 +38,14 @@ class Places {
         return definition;
     }
 
+    // TODO: this is not working, IDs are auto-generated
     id(place) {
         return this.mapId * 100000000 + place.id;
     }
 
     // TODO
     rating(place) {
-        return place.rating.count ? Math.min(place.rating.count, 5) : 1
+        return place.rating.average ? Math.round(place.rating.average) : 1
     }
 
     videoLink(value) {

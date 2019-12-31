@@ -43,24 +43,24 @@ const Merge = ({ api, targetMap }) => {
         )));
     };
 
-    const loadSource = () => {
+    const loadSource = (sourceMapSlug) => {
+        return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
+            console.log('sourceMap', map);
+            const mapotic = new Mapotic(api, map.id);
+            return mapotic.loadMap().then(setSourceMap);
+        });
+    };
+
+    const handleLoad = () => {
         const sourceMapSlug = slug(sourceMapUrl);
         if (sourceMapSlug) {
-            return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
-                console.log('sourceMap', map);
-                const mapotic = new Mapotic(api, map.id);
-                return mapotic.loadMap().then(setSourceMap);
+            setLoading(true);
+            loadSource(sourceMapSlug).finally(() => {
+                setLoading(false);
             });
         } else {
             toast.error('URL should contain "/" character.');
         }
-    };
-
-    const handleLoad = () => {
-        setLoading(true);
-        loadSource().finally(() => {
-            setLoading(false);
-        });
     };
 
     const handleKeyPress = (event) => {
