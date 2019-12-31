@@ -2,15 +2,10 @@
 import { categoryEqual, attributeEqual } from '../util/equal';
 import { chain } from '../util/promise';
 
-const PARENT_ATTRIBUTE = {
-    name: { en: "__Parent__" },
-    attribute_type: "inputtext",
-    settings: [null],
-    icon: "im-openid",
-    permission: "user",
-    is_required: false,
-    can_edit: false
-};
+import { distance2 } from '../util/geo';
+
+import { PARENT_ATTRIBUTE } from './Constants';
+import Places from './Places';
 
 class Mapotic {
 
@@ -38,11 +33,17 @@ class Mapotic {
                 console.log('categories', categories);
                 return this.loadPlaces().then((places) => {
                     console.log('places', places);
-                    return { attributes, categories, places };
+                    return { attributes, categories, places, id: this.mapId };
                 });
             });
         });
-    }
+    };
+
+    extendAttributeMap = (attributeMap, sourceAttribute, targetAttribute) => {
+        const sourceAttributeId = attributeEqual(sourceAttribute, PARENT_ATTRIBUTE) ?
+            PARENT_ATTRIBUTE.id : sourceAttribute.id;
+        attributeMap[sourceAttributeId] = targetAttribute.id;
+    };
 
     mergeAttributes = (attributes, targetAttributes, targetCategories) => {
         let attributeMap = {};
@@ -56,7 +57,7 @@ class Mapotic {
                 attributeEqual(attr, sourceAttribute)
             ));
             if (targetAttribute) {
-                attributeMap[sourceAttribute.id] = targetAttribute.id;
+                this.extendAttributeMap(attributeMap, sourceAttribute, targetAttribute);
             } else {
                 acc.push(sourceAttribute);
             }
@@ -74,7 +75,7 @@ class Mapotic {
             })
         )))).then((newTargetAttributes) => {
             for (let i=0; i < newAttributes.length; ++i) {
-                attributeMap[newAttributes[i].id] = newTargetAttributes[i].id;
+                this.extendAttributeMap(attributeMap, newAttributes[i], newTargetAttributes[i]);
             }
             return newTargetAttributes;
         }).then((newTargetAttributes) => (
@@ -134,11 +135,41 @@ class Mapotic {
         )));
     };
 
-    // selection algorithm to keep number of places under control
-    selectPlaces = (categories, sourcePlaces) => {
-        const count = 3;
+    filterPlacesByCategories = (sourcePlaces, categories) => {
+        if (categories.length === 1) {
+            return sourcePlaces.filter((place) => (place.properties.category === categories[0].id));
+        }
+
         const catIds = new Set(categories.map((category) => (category.id)));
-        const places = sourcePlaces.filter((place) => (catIds.has(place.properties.category)));
+        return sourcePlaces.filter((place) => (catIds.has(place.properties.category)));
+    };
+
+    filterPlacesByArea = (sourcePlaces, area) => {
+        const maxd2 = area.dist * area.dist;
+        return sourcePlaces.filter((place) => (
+                distance2(
+                    place.geometry.coordinates[1], place.geometry.coordinates[0],
+                    area.lat, area.lon
+                ) <= maxd2
+            ));
+    };
+
+    fetchPlaces = (sourcePlaces, sourceMapId) => {
+        const baseUrl = '/maps/' + sourceMapId + '/public-pois/';
+        return Promise.all(sourcePlaces.map((place) => (
+            this.api.getJson(baseUrl + place.properties.id + '/')
+        )));
+    };
+
+    filterPlaces = (sourcePlaces, categories, area) => {
+        
+        // filter by category
+        let places = this.filterPlacesByCategories(sourcePlaces, categories);
+        return this.filterPlacesByArea(places, area);
+
+
+        /*
+        const count = 3;
         if (10 * count > places.length) {
             return places;
         }
@@ -150,14 +181,27 @@ class Mapotic {
             }
         }
         return selectedIndexes.map((i) => (places[i]));
+        */
     };
 
-    mergePlaces = (categories, sourcePlaces) => {
-        const places = this.selectPlaces(categories, sourcePlaces);
-        console.log('random places to be added', places);
+    mergePlaces = (sourceMap, selectedCategories, area, attributeMap) => {
+        
+        const places = this.filterPlaces(sourceMap.places, selectedCategories, area);
+        console.log('places to be added', places);
+        return this.fetchPlaces(places, sourceMap.id).then((places) => {
+            console.log('places', places);
+            const p = new Places(places, sourceMap.id, sourceMap.slug, attributeMap);
+            const d = p.forImport();
+            console.log('definition', d.definition);
+            console.log('data', d.data);
+            return places;
+        });
+
+
+        /*
         const content =
             'Nedamov 1,Lom,14.65639,50.53756,202967,xxx,Suitable for nudists,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg'+'\n'+
-            'Nedamov 2,Lom,14.55639,50.58756,202968,,Suitable for nudists,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg';
+            'Nedamov 2,Centrum,14.55639,50.58756,202968,,,https://ce838d3ec.cloudimg.io/crop/400x266/n/_p_/media/image/geo/2941/319577/temp.jpg';
 
         const importBaseUrl = '/maps/' + this.mapId + '/datasource/';
 
@@ -216,7 +260,7 @@ class Mapotic {
                                     console.log('progess', response.progress);
                                     if (response.progress === 100) {
                                         clearInterval(statusInterval);
-                                        resolve(places);
+                                        resolve(importId);
                                     }
                                 });
                             }, 3000);
@@ -224,27 +268,27 @@ class Mapotic {
                     }
                 });
             })
-        })
+        });
+        */
     };
 
-    merge = (sourceAttributes, sourceCategories, sourcePlaces) => {
+    merge = (sourceMap, selectedCategories, area) => {
 
         return this.loadAttributes().then((targetAttributes) => {
             console.log('targetAttributes', targetAttributes);
             return this.loadCategories().then((targetCategories) => {
                 console.log('targetCategories', targetCategories);
-                return this.mergeAttributes(sourceAttributes, targetAttributes, targetCategories).then(({
+                return this.mergeAttributes(sourceMap.attributes, targetAttributes, targetCategories).then(({
                     attributes,
                     attributeMap
                 }) => {
-                    const newCategories = sourceCategories.filter((sourceCategory) => (
+                    const newCategories = selectedCategories.filter((sourceCategory) => (
                         !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, sourceCategory))
                     )));
                     return this.mergeCategories(newCategories, attributes, attributeMap).then((addedCategories) => {
                         console.log('Missing categories added.', addedCategories);
-                        return this.mergePlaces(sourceCategories, sourcePlaces).then((addedPlaces) => {
-                            console.log('places', addedPlaces);
-                            return ({ addedCategories, addedPlaces });
+                        return this.mergePlaces(sourceMap, selectedCategories, area, attributeMap).then((importId) => {
+                            return ({ addedCategories, importId });
                         });
                     })
                 });
@@ -252,11 +296,8 @@ class Mapotic {
         });
     }
 
-    deletePlaces = (places) => {
-        const baseUrl = '/maps/' + this.mapId + '/pois/';
-        return Promise.all(places.map((place) => (
-            this.api.deleteJson(baseUrl + place.id + '/')
-        )));
+    undoMerge = (importId) => {
+        return this.api.deleteJson('/maps/' + this.mapId + '/datasource/' + importId + '/created_geo/')
     };
 }
 

@@ -15,6 +15,11 @@ const DEFAULT_AREA = {
     dist: 100
 }
 
+function slug(url) {
+    const k = url.lastIndexOf('/');
+    return (k !== -1) ? url.substring(k + 1) : null;
+}
+
 const Merge = ({ api, targetMap }) => {
 
     const [ sourceMapUrl, setSourceMapUrl ] = useState('');
@@ -23,6 +28,7 @@ const Merge = ({ api, targetMap }) => {
     const [ loading, setLoading ] = useState(false);
     const [ area, setArea ] = useState(DEFAULT_AREA);
     const [ addedPlaces, setAddedPlaces ] = useState(null);
+    const [ importId, setImportId ] = useState(null);
 
     const handleSourceMapUrlChange = (event) => {
         setSourceMapUrl(event.target.value);
@@ -38,13 +44,12 @@ const Merge = ({ api, targetMap }) => {
     };
 
     const loadSource = () => {
-        const k = sourceMapUrl.lastIndexOf('/');
-        if (k > -1) {
-            const sourceMapSlug = sourceMapUrl.substring(k + 1);
-            api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
+        const sourceMapSlug = slug(sourceMapUrl);
+        if (sourceMapSlug) {
+            return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
                 console.log('sourceMap', map);
                 const mapotic = new Mapotic(api, map.id);
-                mapotic.loadMap().then(setSourceMap);
+                return mapotic.loadMap().then(setSourceMap);
             });
         } else {
             toast.error('URL should contain "/" character.');
@@ -52,7 +57,16 @@ const Merge = ({ api, targetMap }) => {
     };
 
     const handleLoad = () => {
-        loadSource();
+        setLoading(true);
+        loadSource().finally(() => {
+            setLoading(false);
+        });
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleLoad();
+        }
     };
 
     const handleMerge = (event) => {
@@ -60,11 +74,11 @@ const Merge = ({ api, targetMap }) => {
 
         setLoading(true);
         const mapotic = new Mapotic(api, targetMap.id);
-        mapotic.merge(sourceMap.attributes, selectedCategories, sourceMap.places).then(({
+        mapotic.merge({...sourceMap, slug: slug(sourceMapUrl)}, selectedCategories, area).then(({
             addedCategories,
-            addedPlaces
+            importId
         }) => {
-            setAddedPlaces(addedPlaces);
+            setImportId(importId);
             toast.success('Categories added: ' + addedCategories.map((category) => (category.name.en)));
         }).finally(() => {
             setLoading(false);
@@ -76,7 +90,7 @@ const Merge = ({ api, targetMap }) => {
 
         setLoading(true);
         const mapotic = new Mapotic(api, targetMap.id);
-        mapotic.deletePlaces(addedPlaces).then(() => {
+        mapotic.undoImport(importId).then(() => {
             toast.success('Places deleted.');
         }).finally(() => {
             setLoading(false);
@@ -95,7 +109,7 @@ const Merge = ({ api, targetMap }) => {
 
                 <FormGroup className="sourceMapUrl">
                     <InputGroup>
-                        <Input type="url" name="sourceMapUrl" value={sourceMapUrl} onChange={handleSourceMapUrlChange} id="sourceMapUrl" placeholder="source map URL" disabled={loading} />
+                        <Input type="url" name="sourceMapUrl" value={sourceMapUrl} onChange={handleSourceMapUrlChange} onKeyPress={handleKeyPress} id="sourceMapUrl" placeholder="source map URL" disabled={loading} />
                         <InputGroupAddon addonType="append"><Button onClick={handleLoad} disabled={loading}>Load categories</Button></InputGroupAddon>
                     </InputGroup>
                 </FormGroup>
