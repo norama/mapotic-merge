@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import Api from '../network/Api';
+import Api, { handleError } from '../network/Api';
 
 import './Login.css';
 
@@ -20,23 +20,16 @@ const Login = ({ onLogin }) => {
             body: JSON.stringify({ email, password })
         }).then((response) => {
             if (!response.ok) {
-                throw response;
+                return handleError(response, toast.error);
             }
             return response.json();
         }).then((response) => {
-            console.log(response);
-            handleTargetMap(new Api('Token ' + response.auth_token));
+            handleTargetMap(new Api('Token ' + response.auth_token, toast.error));
         }).catch((error) => {
-            toast.error('Error');
             console.error(error);
         }).finally(() => {
         });
     };
-
-    const failureGoogle = (error) => {
-        toast.error("Google login failure");
-        console.log(error);
-    }
 
     const handleTargetMapUrlChange = (event) => {
         setTargetMapUrl(event.target.value);

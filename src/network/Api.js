@@ -1,9 +1,15 @@
-import { toast } from 'react-toastify';
+export const handleError = (response, onError) => {
+    return response.json().then((error) => {
+        onError(JSON.stringify(error));
+        throw error;
+    });
+};
 
 class Api {
 
-    constructor(authorization) {
+    constructor(authorization, onError) {
         this.authorization = authorization;
+        this.onError = onError;
         this.headers = { accept: 'application/json', 'content-type': 'application/json', authorization };
         this.dsHeaders = { accept: 'application/json', authorization };
     }
@@ -15,11 +21,10 @@ class Api {
             body: body ? JSON.stringify(body) : null
         }).then((response) => {
             if (!response.ok) {
-                throw response;
+                return handleError(response, this.onError);
             }
             return method === "DELETE" ? response.text() : response.json();
         }).catch((error) => {
-            toast.error('Error');
             console.error(error);
             return null;
         });
@@ -45,25 +50,20 @@ class Api {
         return this.fetchJson(url, "DELETE");
     }
 
-    fetchDataSource(url, method="GET", body=null) {
+    postDataSource(url, body) {
         return fetch(process.env.REACT_APP_MAPOTIC_API + url, {
-            method,
+            method: "POST",
             headers: this.dsHeaders,
             body
         }).then((response) => {
             if (!response.ok) {
-                throw response;
+                return handleError(response, this.onError);
             }
-            return method === "DELETE" ? response.text() : response.json();
+            return response.json();
         }).catch((error) => {
-            toast.error('Error');
             console.error(error);
             return null;
         });
-    }
-
-    postDataSource(url, body) {
-        return this.fetchDataSource(url, "POST", body);
     }
 }
 

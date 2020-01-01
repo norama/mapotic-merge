@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useCookies } from 'react-cookie';
+
+import { toast } from 'react-toastify';
 
 import Api from '../network/Api';
 
@@ -33,7 +35,7 @@ const Main = () => {
     return cookies.mapoticEmail && cookies.mapoticAuth && cookies.mapoticTargetMap ? (
         <>
             <User email={cookies.mapoticEmail} onLogout={handleLogout} />
-            <Merge api={new Api(cookies.mapoticAuth)} targetMap={cookies.mapoticTargetMap} />
+            <Merge api={new Api(cookies.mapoticAuth, toast.error)} targetMap={cookies.mapoticTargetMap} />
         </>
     ) : (
         <Login onLogin={handleLogin} />
