@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 
 import { toast } from 'react-toastify';
 
-import Api from '../network/Api';
+import Api from '../mapotic/api/Api';
 
 import Login from './Login';
 import User from './User';
