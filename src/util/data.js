@@ -2,7 +2,7 @@ function escape(item) {
     if (!(typeof(item) === 'string')) {
         return item;
     }
-    if (item.indexOf(',') === -1) {
+    if ((item.indexOf(',') === -1) && (item.indexOf('\n') === -1)) {
         return item;
     }
     // item = item.replace(/\"/g, '""');

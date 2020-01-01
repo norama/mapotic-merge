@@ -42,9 +42,7 @@ class Api {
     }
 
     deleteJson(url) {
-        return this.fetchJson(url, "DELETE").then((res) => {
-            console.log('res', res);
-        });
+        return this.fetchJson(url, "DELETE");
     }
 
     fetchDataSource(url, method="GET", body=null) {

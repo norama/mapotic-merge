@@ -155,19 +155,21 @@ const Merge = ({ api, targetMap }) => {
             </Form>
 
             { progress ?
+            <>
                 <div className="merge-progress">
-                    {progress.collecting === 100 && progress.importing === 100 ?
-                        <h5 id="targetMap"><a href={targetMap.url} target="_blank" rel="noopener noreferrer">Open {targetMap.name} in new tab.</a></h5>
-                        : null
-                    }
                     <>
-                        <div className="text-center">{progress.collecting < 100 ? "Collecting data ..." : "Importing data ..."}</div>
+                        <div className="text-center">{progress.collecting < 100 ? "Collecting data ..." : (progress.importing < 100 ? "Importing data ..." : "")}</div>
                         <Progress multi>
                             <Progress bar color="success" value={progress.collecting / 2} />
                             <Progress bar color="danger" value={progress.importing / 2} />
                         </Progress>
                     </>
                 </div>
+                { progress.collecting === 100 && progress.importing === 100 ?
+                    <a href={targetMap.url} className="progress-link" target="_blank" rel="noopener noreferrer">Open {targetMap.name} in new tab.</a>
+                    : null
+                }
+            </>
             : null }
         </div>
     );

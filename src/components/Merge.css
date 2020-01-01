@@ -44,6 +44,13 @@
     width: 600px;
 }
 
+.__Merge__ .progress-link {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
 textarea:hover,
 input:hover,
 textarea:active,
