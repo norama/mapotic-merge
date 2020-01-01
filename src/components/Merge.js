@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
+import { useCookies } from 'react-cookie';
+
 import { toast } from 'react-toastify';
 
 import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { Progress } from 'reactstrap';
 
 import Area from './Area';
+import { CookieOptions, DefaultArea } from './Main';
 
 import Mapotic from '../network/Mapotic';
 
 import './Merge.css';
-
-// Vaslavske nam, 100km
-const DEFAULT_AREA = {
-    lat: 50.081764,
-    lon: 14.427178,
-    dist: 100
-}
 
 function slug(url) {
     const k = url.lastIndexOf('/');
@@ -24,11 +20,13 @@ function slug(url) {
 
 const Merge = ({ api, targetMap }) => {
 
+    const [ cookies, setCookie, removeCookie ] = useCookies(['mapoticArea']);
+
     const [ sourceMapUrl, setSourceMapUrl ] = useState('');
     const [ sourceMap, setSourceMap ] = useState(null);
     const [ selectedCategories, setSelectedCategories ] = useState([]);
     const [ loading, setLoading ] = useState(false);
-    const [ area, setArea ] = useState(DEFAULT_AREA);
+    const [ area, setArea ] = useState(cookies.mapoticArea ? cookies.mapoticArea : DefaultArea);
     const [ importId, setImportId ] = useState(null);
     const [ progress, setProgress ] = useState(null);
 
@@ -73,6 +71,8 @@ const Merge = ({ api, targetMap }) => {
 
     const handleMerge = (event) => {
         event.preventDefault();
+
+        setCookie('mapoticArea', area, CookieOptions);
 
         setLoading(true);
         setProgress({ collecting: 0, importing: 0 });
