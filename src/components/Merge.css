@@ -36,6 +36,14 @@
     cursor: not-allowed;
 }
 
+.__Merge__ .merge-progress {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 600px;
+}
+
 textarea:hover,
 input:hover,
 textarea:active,

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Progress } from 'reactstrap';
+
 import Area from './Area';
 
 import Mapotic from '../network/Mapotic';
@@ -27,14 +29,14 @@ const Merge = ({ api, targetMap }) => {
     const [ selectedCategories, setSelectedCategories ] = useState([]);
     const [ loading, setLoading ] = useState(false);
     const [ area, setArea ] = useState(DEFAULT_AREA);
-    const [ addedPlaces, setAddedPlaces ] = useState(null);
     const [ importId, setImportId ] = useState(null);
+    const [ progress, setProgress ] = useState(null);
 
     const handleSourceMapUrlChange = (event) => {
         setSourceMapUrl(event.target.value);
         setSourceMap(null);
         setSelectedCategories([]);
-        setAddedPlaces(null);
+        setProgress(null);
     };
 
     const handleCategoriesChange = (event) => {
@@ -73,13 +75,28 @@ const Merge = ({ api, targetMap }) => {
         event.preventDefault();
 
         setLoading(true);
+        setProgress({ collecting: 0, importing: 0 });
         const mapotic = new Mapotic(api, targetMap.id);
-        mapotic.merge({...sourceMap, slug: slug(sourceMapUrl)}, selectedCategories, area).then(({
+        mapotic.merge(
+            {...sourceMap, slug: slug(sourceMapUrl)},
+            selectedCategories,
+            area,
+            setProgress
+        ).then(({
             addedCategories,
+            places,
             importId
         }) => {
+            console.log('Categories added: ' + addedCategories.map((category) => (category.name.en)));
+
             setImportId(importId);
-            toast.success('Categories added: ' + addedCategories.map((category) => (category.name.en)));
+            setProgress({ collecting: 100, importing: 100 });
+
+            if (importId) {
+                toast.success('' + places.length + ' places added.');
+            } else {
+                toast.warn('No places added.');
+            }
         }).finally(() => {
             setLoading(false);
         });
@@ -136,6 +153,22 @@ const Merge = ({ api, targetMap }) => {
                     </FormGroup>
                 : null }
             </Form>
+
+            { progress ?
+                <div className="merge-progress">
+                    {progress.collecting === 100 && progress.importing === 100 ?
+                        <h5 id="targetMap"><a href={targetMap.url} target="_blank" rel="noopener noreferrer">Open {targetMap.name} in new tab.</a></h5>
+                        : null
+                    }
+                    <>
+                        <div className="text-center">{progress.collecting < 100 ? "Collecting data ..." : "Importing data ..."}</div>
+                        <Progress multi>
+                            <Progress bar color="success" value={progress.collecting / 2} />
+                            <Progress bar color="danger" value={progress.importing / 2} />
+                        </Progress>
+                    </>
+                </div>
+            : null }
         </div>
     );
 };

@@ -1,5 +1,5 @@
 export function categoryEqual(cat1, cat2) {
-    return cat1.name.en === cat2.name.en &&
+    return cat1.name.en.trim() === cat2.name.en.trim() &&
         cat1.icon === cat2.icon &&
         cat1.color === cat2.color;
 }
@@ -15,7 +15,7 @@ function settingsEqual(settings1, settings2) {
 }
 
 export function attributeEqual(attr1, attr2) {
-    return attr1.name.en === attr2.name.en &&
+    return attr1.name.en.trim() === attr2.name.en.trim() &&
         attr1.attribute_type === attr2.attribute_type &&
         settingsEqual(attr1.settings, attr2.settings);
 }

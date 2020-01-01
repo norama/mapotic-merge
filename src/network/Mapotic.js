@@ -104,7 +104,7 @@ class Mapotic {
             this.api.getJson(categoryBaseUrl).then(() => (
 
             this.api.postJson(categoryBaseUrl, {
-                name: category.name,
+                name: { en: category.name.en.trim() },
                 color: category.color,
                 icon: category.icon
             }).then((newCategory) => {
@@ -162,10 +162,14 @@ class Mapotic {
             ));
     };
 
-    fetchPlaces = (sourcePlaces, sourceMapId) => {
+    fetchPlaces = (sourcePlaces, sourceMapId, setProgress) => {
+        const d = Math.floor(80 / sourcePlaces.length);
         const baseUrl = '/maps/' + sourceMapId + '/public-pois/';
         return Promise.all(sourcePlaces.map((place) => (
-            this.api.getJson(baseUrl + place.properties.id + '/')
+            this.api.getJson(baseUrl + place.properties.id + '/').then((response) => {
+                setProgress((progress) => ({ collecting: progress.collecting + d, importing: 0 }));
+                return response;
+            })
         )));
     };
 
@@ -178,7 +182,7 @@ class Mapotic {
         return this.filterPlacesByArea(places, area);
     };
 
-    doImport = (definition, data) => {
+    doImport = (definition, data, setProgress) => {
 
         const importBaseUrl = '/maps/' + this.mapId + '/datasource/';
 
@@ -199,35 +203,36 @@ class Mapotic {
                             const statusInterval = setInterval(() => {
                                 this.api.getJson(importBaseUrl + '/' + importId + '/status/').then((response) => {
                                     console.log('status', response);
-                                    console.log('progess', response.progress);
+                                    setProgress({ collecting: 100, importing: response.progress });
                                     if (response.progress === 100) {
                                         clearInterval(statusInterval);
                                         resolve(importId);
                                     }
                                 });
-                            }, 3000);
+                            }, 1000);
                         }));
+                    } else {
+                        return null;
                     }
                 });
             })
         });
     }
 
-    mergePlaces = (sourceMap, selectedCategories, area, attributeMap) => {
-        
-        const places = this.filterPlaces(sourceMap.places, selectedCategories, area);
-        console.log('places to be added', places);
-        return this.fetchPlaces(places, sourceMap.id).then((places) => {
+    mergePlaces = (places, sourceMap, attributeMap, setProgress) => {
+
+        return this.fetchPlaces(places, sourceMap.id, setProgress).then((places) => {
+            setProgress({ collecting: 100, importing: 0 });
             console.log('places', places);
             const p = new Places(places, sourceMap.id, sourceMap.slug, attributeMap);
             const d = p.forImport();
             console.log('definition', d.definition);
             console.log('data', d.data);
-            return this.doImport(d.definition, d.data);
+            return this.doImport(d.definition, d.data, setProgress);
         });
     };
 
-    merge = (sourceMap, selectedCategories, area) => {
+    merge = (sourceMap, selectedCategories, area, setProgress) => {
 
         return this.loadAttributes().then((targetAttributes) => {
             console.log('targetAttributes', targetAttributes);
@@ -237,14 +242,25 @@ class Mapotic {
                     attributes,
                     attributeMap
                 }) => {
+                    setProgress({ collecting: 10, importing: 0 });
                     const newCategories = selectedCategories.filter((sourceCategory) => (
                         !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, sourceCategory))
                     )));
                     return this.mergeCategories(newCategories, attributes, attributeMap).then((addedCategories) => {
+                        setProgress({ collecting: 20, importing: 0 });
                         console.log('Missing categories added.', addedCategories);
-                        return this.mergePlaces(sourceMap, selectedCategories, area, attributeMap).then((importId) => {
-                            return ({ addedCategories, importId });
-                        });
+
+                        const places = this.filterPlaces(sourceMap.places, selectedCategories, area);
+                        console.log('places to be added', places);
+
+                        if (places.length) {
+                            return this.mergePlaces(places, sourceMap, attributeMap, setProgress).then((importId) => {
+                                return ({ addedCategories, places, importId });
+                            });
+                        } else {
+                            return ({ addedCategories, places, importId: null });
+                        }
+
                     })
                 });
             });
