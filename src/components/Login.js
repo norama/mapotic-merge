@@ -14,9 +14,9 @@ const Login = ({ onLogin }) => {
     const [ password, setPassword ] = useState('');
 
     const handleSubmit = () => {
-        login(email, password, toast.error).then((api) => {
-            if (api) {
-                handleTargetMap(api);
+        login(email, password, toast.error).then((auth) => {
+            if (auth) {
+                handleTargetMap(new Api(auth, toast.error));
             }
         });
     };

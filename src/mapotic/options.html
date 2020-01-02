@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <style>
+            body {
+                width: 400px;
+            }
+            fieldset {
+                margin-top: 1em;
+            }
+            fieldset:first-child {
+                margin-top: 0;
+            }
+            .item {
+                margin: 0.7em 0.5em;
+            }
+            #loginForm .item {
+                display: flex;
+            }
+            #loginForm .item .loginItem {
+                margin: auto;
+            }
+            #loginForm .item .loginInput {
+                width: 360px;
+                height: 40px;
+                padding: 5px;
+            }
+            #loginForm .item .loginLabel {
+                margin-bottom: 3px;
+            }
+            .row {
+                display: flex;
+                flex-flow: row;
+                justify-content: space-around;
+            }
+            .footer {
+                display: flex;
+                flex-flow: row;
+                justify-content: center;
+                align-items: center;
+                margin-top: 1em;
+            }
+            button {
+                cursor: pointer;
+                padding: 10px;
+            }
+            #userEmail {
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+                color: #59646e;
+                background-color: rgb(226, 222, 222);
+                margin-left: auto;
+            }
+            #logout {
+                background: none!important;
+                border: none;
+                padding: 0!important;
+                /*optional*/
+                font-family: arial, sans-serif;
+                /*input has OS specific font-family*/
+                color: #069;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        </style>
+
+        <script type="module" src="options.js"></script>
+
+    </head>
+    <body>
+        <form id="loginForm">
+            <fieldset>
+                <legend id="mapoticLogin"></legend>
+                <div class="item">
+                    <div class="loginItem">
+                        <div id="email" class="loginLabel"></div>
+                        <input type="email" id="emailInput" class="loginInput" required>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="loginItem">
+                        <div id="password" class="loginLabel"></div>
+                        <input type="password" id="passwordInput" class="loginInput" required>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="footer">
+                <button id="login"></button>
+            </div>
+        </form>
+
+        <form id="optionsForm">
+            <div class="row">
+                <div class="item" id="userEmail"></div>
+                <button class="item" id="logout"></button>
+            </div>
+            <fieldset>
+                <legend id="openedIn"></legend>
+                <div class="item">
+                    <input type="radio" name="sign" id="newTab">
+                    <label for="newTab" id="inNewTab"></label>
+                </div>
+                <div class="item">
+                    <input type="radio" name="sign" id="newWindow">
+                    <label for="newWindow" id="inNewWindow"></label>
+                </div>
+            </fieldset>
+            <div class="footer">
+                <button id="save"></button>
+            </div>
+        </form>
+    </body>
+</html>

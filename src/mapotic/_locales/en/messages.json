@@ -7,6 +7,21 @@
       "message": "Shows accommodation from booking.com on Mapotic maps.",
       "description": "The description of the application, displayed in the web store."
     },
+    "mapoticLogin": {
+        "message": "Mapotic login"
+    },
+    "email": {
+        "message": "E-mail"
+    },
+    "password": {
+        "message": "Password"
+    },
+    "login": {
+        "message": "Login"
+    },
+    "logout": {
+        "message": "Logout"
+    },
     "openedIn": {
         "message": "Mapotic maps are opened in"
     },

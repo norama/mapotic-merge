@@ -18,7 +18,7 @@ export function login(email, password, onError) {
         }
         return response.json();
     }).then((response) => {
-        return new Api('Token ' + response.auth_token, onError);
+        return 'Token ' + response.auth_token;
     }).catch((error) => {
         console.error(error);
         return null;

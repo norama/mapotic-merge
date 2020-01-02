@@ -5,6 +5,21 @@
     "application_description": {
       "message": "Ukazuje ubytování z booking.com na Mapotic mapách."
     },
+    "mapoticLogin": {
+        "message": "Mapotic přihlášení"
+    },
+    "email": {
+        "message": "E-mail"
+    },
+    "password": {
+        "message": "Heslo"
+    },
+    "login": {
+        "message": "Přilášení"
+    },
+    "logout": {
+        "message": "Odhlášení"
+    },
     "openedIn": {
         "message": "Mapotic mapy budou otevírané"
     },
