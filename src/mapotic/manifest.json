@@ -1,0 +1,38 @@
+{
+    "name": "Booking",
+    "description": "Booking scraper",
+    "version": "1",
+    "manifest_version": 2,
+    "page_action": {
+        "default_icon": {
+            "16": "chrome/icons/icon16.png",
+            "32": "chrome/icons/icon32.png",
+            "48": "chrome/icons/icon48.png",
+            "128": "chrome/icons/icon128.png"
+        },
+        "default_title": "Booking Map"
+    },
+    "icons": {
+        "16": "chrome/icons/icon16.png",
+        "32": "chrome/icons/icon32.png",
+        "48": "chrome/icons/icon48.png",
+        "128": "chrome/icons/icon128.png"
+    },
+    "permissions": [
+        "tabs",
+        "storage",
+        "https://www.mapotic.com/api/v1"
+    ],
+    "options_ui": {
+        "page": "chrome/options.html",
+        "open_in_tab": false
+    },
+    "background": {
+        "scripts": ["chrome/background.js"],
+        "persistent": false
+    },
+    "content_scripts": [{
+        "matches": ["https://www.booking.com/*"],
+        "js": ["chrome/content.js"]
+    }]
+}
