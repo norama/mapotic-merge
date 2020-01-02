@@ -1,4 +1,4 @@
-import { login } from './api/Api.js';
+import { login } from '../api/Api.js';
 
 function showLoginForm() {
     document.getElementById("loginForm").style.display = "block";

@@ -1,10 +1,10 @@
 
-import { categoryEqual, attributeEqual } from '../util/equal';
-import { chain } from '../util/promise';
+import { categoryEqual, attributeEqual } from './util/equal';
+import { chain } from './util/promise';
 
-import { distance2 } from '../util/geo';
+import { distance2 } from './util/geo';
 
-import { toCsv } from '../util/data';
+import { toCsv } from './util/data';
 
 import { PARENT_ATTRIBUTE } from './Constants';
 import Places from './Places';

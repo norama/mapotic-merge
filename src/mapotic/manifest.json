@@ -6,18 +6,18 @@
     "default_locale": "en",
     "page_action": {
         "default_icon": {
-            "16": "icons/icon16.png",
-            "32": "icons/icon32.png",
-            "48": "icons/icon48.png",
-            "128": "icons/icon128.png"
+            "16": "chrome/icons/icon16.png",
+            "32": "chrome/icons/icon32.png",
+            "48": "chrome/icons/icon48.png",
+            "128": "chrome/icons/icon128.png"
         },
         "default_title": "Booking Map"
     },
     "icons": {
-        "16": "icons/icon16.png",
-        "32": "icons/icon32.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
+        "16": "chrome/icons/icon16.png",
+        "32": "chrome/icons/icon32.png",
+        "48": "chrome/icons/icon48.png",
+        "128": "chrome/icons/icon128.png"
     },
     "permissions": [
         "tabs",
@@ -25,15 +25,15 @@
         "https://www.mapotic.com/api/v1/*"
     ],
     "options_ui": {
-        "page": "options.html",
+        "page": "chrome/options.html",
         "open_in_tab": false
     },
     "background": {
-        "scripts": ["background.js"],
+        "scripts": ["chrome/background.js"],
         "persistent": false
     },
     "content_scripts": [{
         "matches": ["https://www.booking.com/*"],
-        "js": ["content.js", "api/Api.js"]
+        "js": ["chrome/content.js", "api/Api.js"]
     }]
 }
