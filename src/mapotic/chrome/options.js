@@ -11,7 +11,8 @@ function showOptionsForm() {
 }
 
 function initFromStorage() {
-    chrome.storage.sync.get(["display", "email", "mapoticAuth"], function(stored) {
+    chrome.storage.sync.get(["distance", "display", "email", "mapoticAuth"], function(stored) {
+        document.getElementById("distanceInput").value = stored.distance ? stored.distance : 50;
         document.getElementById("newTab").checked = (stored.display !== "window");
         document.getElementById("newWindow").checked = (stored.display === "window");
         document.getElementById("userEmail").innerText = stored.email ? stored.email : "";
@@ -30,9 +31,12 @@ function setSaveHandler() {
         if (!document.getElementById("optionsForm").checkValidity()) {
             return;
         }
+
+        const distance = document.getElementById("distanceInput").value;
         const newTab = document.getElementById("newTab").checked;
 
         chrome.storage.sync.set({
+            distance,
             display: newTab ? "tab" : "window"
         }, function () {
             window.close();
@@ -42,7 +46,7 @@ function setSaveHandler() {
 
 function setLogoutHandler() {
     document.getElementById("logout").addEventListener("click", function() {
-        chrome.storage.sync.remove(["display", "email", "mapoticAuth"], initFromStorage);
+        chrome.storage.sync.remove(["distance", "display", "email", "mapoticAuth"], initFromStorage);
     });
 }
 
@@ -71,7 +75,18 @@ function setLoginHandler() {
 }
 
 function setLocalizedTexts() {
-    const ids = ["mapoticLogin", "email", "password", "login", "logout", "openedIn", "inNewTab", "inNewWindow", "save"];
+    const ids = [
+        "mapoticLogin",
+        "email",
+        "password",
+        "login",
+        "logout",
+        "openedIn",
+        "inNewTab",
+        "inNewWindow",
+        "save",
+        "distance"
+    ];
     ids.forEach((id) => {
         document.getElementById(id).innerHTML = chrome.i18n.getMessage(id);
     });

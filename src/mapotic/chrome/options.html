@@ -13,18 +13,18 @@
             .item {
                 margin: 0.7em 0.5em;
             }
-            #loginForm .item {
+            .item {
                 display: flex;
             }
-            #loginForm .item .loginItem {
+            .item .itemBox {
                 margin: auto;
             }
-            #loginForm .item .loginInput {
+            .item .textInput {
                 width: 360px;
                 height: 40px;
                 padding: 5px;
             }
-            #loginForm .item .loginLabel {
+            .item .inputLabel {
                 margin-bottom: 3px;
             }
             .row {
@@ -83,15 +83,15 @@
             <fieldset>
                 <legend id="mapoticLogin"></legend>
                 <div class="item">
-                    <div class="loginItem">
-                        <div id="email" class="loginLabel"></div>
-                        <input type="email" id="emailInput" class="loginInput" required>
+                    <div class="itemBox">
+                        <div id="email" class="inputLabel"></div>
+                        <input type="email" id="emailInput" class="textInput" required>
                     </div>
                 </div>
                 <div class="item">
-                    <div class="loginItem">
-                        <div id="password" class="loginLabel"></div>
-                        <input type="password" id="passwordInput" class="loginInput" required>
+                    <div class="itemBox">
+                        <div id="password" class="inputLabel"></div>
+                        <input type="password" id="passwordInput" class="textInput" required>
                     </div>
                 </div>
             </fieldset>
@@ -105,6 +105,14 @@
                 <div class="item" id="userEmail"></div>
                 <button class="item" id="logout"></button>
             </div>
+            <fieldset>
+                <div class="item">
+                    <div class="itemBox">
+                        <div id="distance" class="inputLabel"></div>
+                        <input type="number" min="1" id="distanceInput" class="textInput" required>
+                    </div>
+                </div>
+            </fieldset>
             <fieldset>
                 <legend id="openedIn"></legend>
                 <div class="item">

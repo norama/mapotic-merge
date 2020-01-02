@@ -22,6 +22,9 @@
     "logout": {
         "message": "Logout"
     },
+    "distance": {
+        "message": "Distance (km)"
+    },
     "openedIn": {
         "message": "Mapotic maps are opened in"
     },

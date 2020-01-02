@@ -20,6 +20,9 @@
     "logout": {
         "message": "Odhlášení"
     },
+    "distance": {
+        "message": "Vzdálenost (km)"
+    },
     "openedIn": {
         "message": "Mapotic mapy budou otevírané"
     },
