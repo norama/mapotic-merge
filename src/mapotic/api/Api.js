@@ -5,6 +5,26 @@ export const handleError = (response, onError) => {
     });
 };
 
+const MAPOTIC_API = "https://www.mapotic.com/api/v1";
+
+export function login(email, password, onError) {
+    return fetch(MAPOTIC_API + '/auth/login/', {
+        method: "POST",
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    }).then((response) => {
+        if (!response.ok) {
+            return handleError(response, onError);
+        }
+        return response.json();
+    }).then((response) => {
+        return new Api('Token ' + response.auth_token, onError);
+    }).catch((error) => {
+        console.error(error);
+        return null;
+    });
+}
+
 class Api {
 
     constructor(authorization, onError) {
@@ -15,7 +35,7 @@ class Api {
     }
 
     fetchJson(url, method="GET", body=null) {
-        return fetch(process.env.REACT_APP_MAPOTIC_API + url, {
+        return fetch(MAPOTIC_API + url, {
             method,
             headers: this.headers,
             body: body ? JSON.stringify(body) : null
@@ -51,7 +71,7 @@ class Api {
     }
 
     postDataSource(url, body) {
-        return fetch(process.env.REACT_APP_MAPOTIC_API + url, {
+        return fetch(MAPOTIC_API + url, {
             method: "POST",
             headers: this.dsHeaders,
             body

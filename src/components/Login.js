@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import { toast } from 'react-toastify';
 
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import Api, { handleError } from '../mapotic/api/Api';
+import { Button, Form, FormGroup, Input } from 'reactstrap';
+import Api, { login } from '../mapotic/api/Api';
 
 import './Login.css';
 
@@ -14,20 +14,10 @@ const Login = ({ onLogin }) => {
     const [ password, setPassword ] = useState('');
 
     const handleSubmit = () => {
-        fetch(process.env.REACT_APP_MAPOTIC_API + '/auth/login/', {
-            method: "POST",
-            headers: { accept: 'application/json', 'content-type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        }).then((response) => {
-            if (!response.ok) {
-                return handleError(response, toast.error);
+        login(email, password, toast.error).then((api) => {
+            if (api) {
+                handleTargetMap(api);
             }
-            return response.json();
-        }).then((response) => {
-            handleTargetMap(new Api('Token ' + response.auth_token, toast.error));
-        }).catch((error) => {
-            console.error(error);
-        }).finally(() => {
         });
     };
 
