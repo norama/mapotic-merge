@@ -1,8 +1,9 @@
 {
-    "name": "Booking",
-    "description": "Booking scraper",
+    "name": "__MSG_application_name__",
+    "description": "__MSG_application_description__",
     "version": "1",
     "manifest_version": 2,
+    "default_locale": "en",
     "page_action": {
         "default_icon": {
             "16": "chrome/icons/icon16.png",

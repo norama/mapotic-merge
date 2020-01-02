@@ -1,4 +1,58 @@
 <html>
-    <head></head>
-    <body><h1>MAP</h1></body>
+    <head>
+        <style>
+            body {
+                width: 500px;
+            }
+            fieldset {
+              margin-top: 1em;
+            }
+            fieldset:first-child {
+              margin-top: 0;
+            }
+            .item {
+              margin: 0.7em 0.5em 0.6em 0.5em;
+            }
+            .row {
+              display: flex;
+              flex-flow: row;
+              justify-content: space-around;
+            }
+            #popupWidth, #popupHeight {
+              width: 6em;
+              text-align: center;
+            }
+            #footer {
+              display: flex;
+              flex-flow: row;
+              justify-content: center;
+              align-items: center;
+              margin-top: 1em;
+            }
+            #save {
+                cursor: pointer;
+            }
+        </style>
+
+        <script type="text/javascript" src="options.js"></script>
+
+    </head>
+    <body>
+        <form id="options">
+            <fieldset>
+                <legend id="openedIn"></legend>
+                <div class="item">
+                    <input type="radio" name="sign" id="newTab">
+                    <label for="newTab" id="inNewTab"></label>
+                </div>
+                <div class="item">
+                    <input type="radio" name="sign" id="newWindow">
+                    <label for="newWindow" id="inNewWindow"></label>
+                </div>
+            </fieldset>
+            <div id="footer">
+                <button id="save"></button>
+            </div>
+        </form>
+    </body>
 </html>

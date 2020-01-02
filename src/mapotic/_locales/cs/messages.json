@@ -1,0 +1,20 @@
+{
+    "application_name": {
+      "message": "Mapotic booking"
+    },
+    "application_description": {
+      "message": "Ukazuje ubytování z booking.com na Mapotic mapách."
+    },
+    "openedIn": {
+        "message": "Mapotic mapy budou otevírané"
+    },
+    "inNewTab": {
+        "message": "v novém tabu"
+    },
+    "inNewWindow": {
+        "message": "v novém okně"
+    },
+    "save": {
+        "message": "Uložit"
+    }
+}

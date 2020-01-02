@@ -1,0 +1,22 @@
+{
+    "application_name": {
+      "message": "Mapotic booking",
+      "description": "The title of the application, displayed in the web store."
+    },
+    "application_description": {
+      "message": "Shows accommodation from booking.com on Mapotic maps.",
+      "description": "The description of the application, displayed in the web store."
+    },
+    "openedIn": {
+        "message": "Mapotic maps are opened in"
+    },
+    "inNewTab": {
+        "message": "in a new tab"
+    },
+    "inNewWindow": {
+        "message": "in a new window"
+    },
+    "save": {
+        "message": "Save"
+    }
+}
