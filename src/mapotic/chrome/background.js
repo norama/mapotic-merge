@@ -27,17 +27,17 @@ function center(hotels) {
     };
 }
 
-function hotelsToMap(hotels, stored, api) {
+function hotelsToMap(hotels, stored) {
     //chrome.notifications.create({ title: 'title', message: 'message', iconUrl: "icons/icon48.png", type: "basic" });
 }
 
-function handleError(error) {
-    chrome.notifications.create({ title: 'ERROR', message: error, iconUrl: "icons/icon48.png", type: "basic" });
+function handleError(error, title='ERROR') {
+    chrome.notifications.create({ title, message: error, iconUrl: "icons/icon48.png", type: "basic" });
 }
 
 function map(hotels) {
     chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
-        const api = new Api(stored.mapoticAuth, handleError);
+        const api = new Api(stored.mapoticAuth);
         if (!stored.targetMap) {
             createTargetMap(center(hotels), api).then((targetMap) => {
                 console.log('targetMap', targetMap);
@@ -48,11 +48,14 @@ function map(hotels) {
                         slug: targetMap.slug
                     }
                 }, function () {
-                    hotelsToMap(hotels, stored, api);
+                    hotelsToMap(hotels, stored);
                 });
+            }).catch((error) => {
+                console.error(error);
+                handleError('Try to logout/login.', 'Could not create target map.');
             });
         } else {
-            hotelsToMap(hotels, stored, api);
+            hotelsToMap(hotels, stored);
         }
     });
 }

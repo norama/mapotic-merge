@@ -1,12 +1,16 @@
 export const handleError = (response, onError) => {
-    if (response.status === 500) {
-        onError('Server error, see console.');
-        throw error;
+    if (onError) {
+        if (response.status === 500) {
+            onError('Server error, see console.');
+            throw response;
+        } else {
+            return response.json().then((error) => {
+                onError(JSON.stringify(error));
+                throw error;
+            });
+        }
     } else {
-        return response.json().then((error) => {
-            onError(JSON.stringify(error));
-            throw error;
-        });
+        throw response;
     }
 };
 
@@ -25,8 +29,12 @@ export function login(email, password, onError) {
     }).then((response) => {
         return 'Token ' + response.auth_token;
     }).catch((error) => {
-        console.error(error);
-        return null;
+        if (onError) {
+            console.error(error);
+            return null;
+        } else {
+            throw error;
+        }
     });
 }
 
@@ -50,8 +58,12 @@ class Api {
             }
             return method === "DELETE" ? response.text() : response.json();
         }).catch((error) => {
-            console.error(error);
-            return null;
+            if (this.onError) {
+                console.error(error);
+                return null;
+            } else {
+                throw error;
+            }
         });
     }
 
@@ -86,8 +98,12 @@ class Api {
             }
             return response.json();
         }).catch((error) => {
-            console.error(error);
-            return null;
+            if (this.onError) {
+                console.error(error);
+                return null;
+            } else {
+                throw error;
+            }
         });
     }
 }
