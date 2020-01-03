@@ -17,8 +17,6 @@ const config = {
         places: [{
             map: "https://www.mapotic.com/chranena-uzemi"
         }, {
-            map: "https://www.mapotic.com/vyznamne-stromy"
-        }, {
             map: "https://www.mapotic.com/vodopady-ceske-republiky"
         }]
     }, {

@@ -29,11 +29,11 @@
         "open_in_tab": false
     },
     "background": {
-        "scripts": ["chrome/background.js"],
+        "page": "chrome/background.html",
         "persistent": false
     },
     "content_scripts": [{
         "matches": ["https://www.booking.com/*"],
-        "js": ["chrome/content.js", "api/Api.js"]
+        "js": ["chrome/content.js"]
     }]
 }
