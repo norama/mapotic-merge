@@ -1,5 +1,7 @@
 import { login } from '../api/Api.js';
 
+import config from './config.js';
+
 function showLoginForm() {
     document.getElementById("loginForm").style.display = "block";
     document.getElementById("optionsForm").style.display = "none";
@@ -11,11 +13,15 @@ function showOptionsForm() {
 }
 
 function initFromStorage() {
-    chrome.storage.sync.get(["distance", "display", "email", "mapoticAuth"], function(stored) {
+    chrome.storage.sync.get(["collections", "distance", "display", "email", "mapoticAuth"], function(stored) {
         document.getElementById("distanceInput").value = stored.distance ? stored.distance : 50;
         document.getElementById("newTab").checked = (stored.display !== "window");
         document.getElementById("newWindow").checked = (stored.display === "window");
         document.getElementById("userEmail").innerText = stored.email ? stored.email : "";
+        config.collections.forEach((collection) => {
+            document.getElementById(collection.name + "Input").checked = stored.collections ?
+                stored.collections.includes(collection.name) : true;
+        });
 
         if (stored.mapoticAuth) {
             showOptionsForm();
@@ -32,10 +38,17 @@ function setSaveHandler() {
             return;
         }
 
+        const collections = config.collections.reduce((acc, coll) => {
+            if (document.getElementById(coll.name + "Input").checked) {
+                acc.push(coll.name);
+            }
+            return acc;
+        }, []);
         const distance = document.getElementById("distanceInput").value;
         const newTab = document.getElementById("newTab").checked;
 
         chrome.storage.sync.set({
+            collections,
             distance,
             display: newTab ? "tab" : "window"
         }, function () {
@@ -46,7 +59,7 @@ function setSaveHandler() {
 
 function setLogoutHandler() {
     document.getElementById("logout").addEventListener("click", function() {
-        chrome.storage.sync.remove(["distance", "display", "email", "mapoticAuth"], initFromStorage);
+        chrome.storage.sync.clear(initFromStorage);
     });
 }
 
@@ -85,7 +98,14 @@ function setLocalizedTexts() {
         "inNewTab",
         "inNewWindow",
         "save",
-        "distance"
+        "distance",
+        "collections",
+        "swimming",
+        "skiing",
+        "nature",
+        "culture",
+        "drinking",
+        "shopping"
     ];
     ids.forEach((id) => {
         document.getElementById(id).innerHTML = chrome.i18n.getMessage(id);

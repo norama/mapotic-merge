@@ -2,7 +2,7 @@
     <head>
         <style>
             body {
-                width: 400px;
+                width: 440px;
             }
             fieldset {
                 margin-top: 1em;
@@ -20,7 +20,7 @@
                 margin: auto;
             }
             .item .textInput {
-                width: 360px;
+                width: 400px;
                 height: 40px;
                 padding: 5px;
             }
@@ -31,6 +31,9 @@
                 display: flex;
                 flex-flow: row;
                 justify-content: space-around;
+            }
+            #collectionsFieldset .item {
+                width: 120px;
             }
             .footer {
                 display: flex;
@@ -62,7 +65,7 @@
                 text-decoration: underline;
                 cursor: pointer;
             }
-            input[type=radio] {
+            input[type=radio], input[type=checkbox] {
                 float: left;
                 clear: none;
                 margin: 2px 8px 0 0;
@@ -105,6 +108,37 @@
                 <div class="item" id="userEmail"></div>
                 <button class="item" id="logout"></button>
             </div>
+            <fieldset id="collectionsFieldset">
+                <legend id="collections"></legend>
+                <div class="row">
+                    <div class="item">
+                        <input type="checkbox" id="swimmingInput">
+                        <label for="swimmingInput" id="swimming"></label>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" id="skiingInput">
+                        <label for="skiingInput" id="skiing"></label>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" id="natureInput">
+                        <label for="natureInput" id="nature"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="item">
+                        <input type="checkbox" id="cultureInput">
+                        <label for="cultureInput" id="culture"></label>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" id="drinkingInput">
+                        <label for="drinkingInput" id="drinking"></label>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox" id="shoppingInput">
+                        <label for="shoppingInput" id="shopping"></label>
+                    </div>
+                </div>
+            </fieldset>
             <fieldset>
                 <div class="item">
                     <div class="itemBox">

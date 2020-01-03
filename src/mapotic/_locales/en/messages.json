@@ -36,5 +36,26 @@
     },
     "save": {
         "message": "Save"
+    },
+    "collections": {
+        "message": "Collections"
+    },
+    "swimming": {
+        "message": "swimming, wellness"
+    },
+    "skiing": {
+        "message": "skiing"
+    },
+    "nature": {
+        "message": "nature"
+    },
+    "culture": {
+        "message": "culture"
+    },
+    "drinking": {
+        "message": "drinking"
+    },
+    "shopping": {
+        "message": "shopping"
     }
 }

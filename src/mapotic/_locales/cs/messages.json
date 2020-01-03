@@ -34,5 +34,26 @@
     },
     "save": {
         "message": "Uložit"
+    },
+    "collections": {
+        "message": "Kolekce"
+    },
+    "swimming": {
+        "message": "plavání, wellness"
+    },
+    "skiing": {
+        "message": "lyžování"
+    },
+    "nature": {
+        "message": "příroda"
+    },
+    "culture": {
+        "message": "kultura"
+    },
+    "drinking": {
+        "message": "pivo, vino"
+    },
+    "shopping": {
+        "message": "nákup"
     }
 }
