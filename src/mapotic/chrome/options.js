@@ -2,6 +2,12 @@ import { login } from '../api/Api.js';
 
 import config from './config.js';
 
+const DEFAULT_OPTIONS = {
+    distance: 50,
+    display: "tab",
+    collections: config.collections.map((collection) => (collection.name))
+};
+
 function showLoginForm() {
     document.getElementById("loginForm").style.display = "block";
     document.getElementById("optionsForm").style.display = "none";
@@ -14,13 +20,14 @@ function showOptionsForm() {
 
 function initFromStorage() {
     chrome.storage.sync.get(["collections", "distance", "display", "email", "mapoticAuth"], function(stored) {
-        document.getElementById("distanceInput").value = stored.distance ? stored.distance : 50;
-        document.getElementById("newTab").checked = (stored.display !== "window");
-        document.getElementById("newWindow").checked = (stored.display === "window");
-        document.getElementById("userEmail").innerText = stored.email ? stored.email : "";
+        const options = stored.mapoticAuth ? stored : DEFAULT_OPTIONS;
+        document.getElementById("distanceInput").value = options.distance;
+        document.getElementById("newTab").checked = (options.display !== "window");
+        document.getElementById("newWindow").checked = (options.display === "window");
+        document.getElementById("userEmail").innerText = options.email ? options.email : "";
         config.collections.forEach((collection) => {
-            document.getElementById(collection.name + "Input").checked = stored.collections ?
-                stored.collections.includes(collection.name) : true;
+            document.getElementById(collection.name + "Input").checked =
+                options.collections.includes(collection.name);
         });
 
         if (stored.mapoticAuth) {
@@ -80,7 +87,8 @@ function setLoginHandler() {
                 console.log('auth', mapoticAuth);
                 chrome.storage.sync.set({
                     email,
-                    mapoticAuth
+                    mapoticAuth,
+                    ...DEFAULT_OPTIONS
                 }, initFromStorage);
             }
         });
@@ -119,7 +127,6 @@ function onLoad() {
     setSaveHandler();
     setLogoutHandler();
     setLoginHandler();
-
 }
 
 document.addEventListener("DOMContentLoaded", onLoad);
