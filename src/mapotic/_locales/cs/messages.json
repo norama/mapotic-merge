@@ -3,7 +3,7 @@
       "message": "Mapotic booking"
     },
     "application_description": {
-      "message": "Ukazuje ubytování z booking.com na Mapotic mapách."
+      "message": "Ukazuje ubytování z booking.com na Mapotic mapách. IMPORTANT: on chrome://flags page set 'Enable native notifications' to Disabled."
     },
     "mapoticLogin": {
         "message": "Mapotic přihlášení"

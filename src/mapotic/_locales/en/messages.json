@@ -4,7 +4,7 @@
       "description": "The title of the application, displayed in the web store."
     },
     "application_description": {
-      "message": "Shows accommodation from booking.com on Mapotic maps.",
+      "message": "Shows accommodation from booking.com on Mapotic maps. IMPORTANT: on chrome://flags page set 'Enable native notifications' to Disabled.",
       "description": "The description of the application, displayed in the web store."
     },
     "mapoticLogin": {

@@ -70,6 +70,10 @@ function setLogoutHandler() {
     });
 }
 
+function handleError(error) {
+    chrome.notifications.create({ title: 'ERROR', message: error, iconUrl: "icons/icon48.png", type: "basic" });
+}
+
 function setLoginHandler() {
     document.getElementById("login").addEventListener("click", function(event) {
         if (!document.getElementById("loginForm").checkValidity()) {
@@ -80,7 +84,7 @@ function setLoginHandler() {
 
         const email = document.getElementById("emailInput").value;
         const password = document.getElementById("passwordInput").value;
-        const onError = chrome.extension.getBackgroundPage().alert;
+        const onError = handleError; //chrome.extension.getBackgroundPage().alert;
 
         login(email, password, onError).then((mapoticAuth) => {
             if (mapoticAuth) {

@@ -28,12 +28,16 @@ function center(hotels) {
 }
 
 function hotelsToMap(hotels, stored, api) {
-    chrome.notifications.create('id0', { title: 'title', message: 'message', iconUrl: "icons/icon48.png", type: "progress" });
+    //chrome.notifications.create({ title: 'title', message: 'message', iconUrl: "icons/icon48.png", type: "basic" });
+}
+
+function handleError(error) {
+    chrome.notifications.create({ title: 'ERROR', message: error, iconUrl: "icons/icon48.png", type: "basic" });
 }
 
 function map(hotels) {
     chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
-        const api = new Api(stored.mapoticAuth, chrome.extension.getBackgroundPage().alert);
+        const api = new Api(stored.mapoticAuth, handleError);
         if (!stored.targetMap) {
             createTargetMap(center(hotels), api).then((targetMap) => {
                 console.log('targetMap', targetMap);

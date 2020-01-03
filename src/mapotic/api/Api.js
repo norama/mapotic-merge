@@ -1,8 +1,13 @@
 export const handleError = (response, onError) => {
-    return response.json().then((error) => {
-        onError(JSON.stringify(error));
+    if (response.status === 500) {
+        onError('Server error, see console.');
         throw error;
-    });
+    } else {
+        return response.json().then((error) => {
+            onError(JSON.stringify(error));
+            throw error;
+        });
+    }
 };
 
 const MAPOTIC_API = "https://www.mapotic.com/api/v1";
