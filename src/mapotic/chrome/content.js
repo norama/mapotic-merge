@@ -1,8 +1,28 @@
+function parseLocation(location) {
+    const lonlat = location.split(',');
+    return {
+        lon: parseFloat(lonlat[0]),
+        lat: parseFloat(lonlat[1])
+    };
+}
+
 class Scraper {
-    constructor() {
+    constructor(type) {
+        this.type = type;
     }
 
-    scrapeHotels() {
+    scrape() {
+        switch (this.type) {
+            case "searchresults":
+                return this.scrapeSearchResults();
+            case "hotel":
+                return this.scrapeHotels();
+            default:
+                return null;
+        }
+    }
+
+    scrapeSearchResults() {
         const hotelsHtml = [...document.querySelectorAll('div.sr_item')];
         const hotelsData = hotelsHtml.map((hotelHtml) => {
             const link = hotelHtml.querySelector('a.sr_item_photo_link.sr_hotel_preview_track');
@@ -24,23 +44,30 @@ class Scraper {
             const address = hotelHtml.querySelector('div.sr_card_address_line');
             const a = address.querySelector('a.bui-link');
             const place = a.getAttribute('data-tooltip-text');
-            const location = a.getAttribute('data-coords');
+            const { lon, lat } = parseLocation(a.getAttribute('data-coords'));
+            const soldOut = !!content.querySelector('span.sold_out_property');
     
             return {
-                name, place, url, img, location, price
+                name, place, url, img, lon, lat, price, soldOut
             };
         });
     
         return hotelsData;
+    }
+
+    // TODO
+    scrapeHotel() {
+        return [];
     }
 }
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.message === "clicked_page_action" ) {
-            console.log('url', request.url);
-            const hotelsData = new Scraper().scrapeHotels();
-            console.log(hotelsData);
+            console.log('type', request.type);
+            const hotels = new Scraper(request.type).scrape();
+            console.log(hotels);
+            sendResponse(hotels);
         }
     }
 );

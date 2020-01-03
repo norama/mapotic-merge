@@ -1,4 +1,5 @@
 import Api from '../api/Api.js';
+import createTargetMap from './createTargetMap.js';
 
 function bookingType(url) {
     if (url.startsWith("https://www.booking.com/searchresults")) {
@@ -11,12 +12,55 @@ function bookingType(url) {
 }
 
 chrome.runtime.onInstalled.addListener(function() {
-    console.log('xxx');
+    console.log('mapotic booking installed');
 });
 
+function avg(arr) {
+    const sum = arr.reduce((acc, x) => acc + x, 0);
+    return sum / arr.length;
+}
+
+function center(hotels) {
+    return {
+        lon: avg(hotels.map(hotel => hotel.lon)),
+        lat: avg(hotels.map(hotel => hotel.lat))
+    };
+}
+
+function hotelsToMap(hotels, stored, api) {
+    chrome.notifications.create('id0', { title: 'title', message: 'message', iconUrl: "icons/icon48.png", type: "progress" });
+}
+
+function map(hotels) {
+    chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
+        const api = new Api(stored.mapoticAuth, chrome.extension.getBackgroundPage().alert);
+        if (!stored.targetMap) {
+            createTargetMap(center(hotels), api).then((targetMap) => {
+                console.log('targetMap', targetMap);
+                chrome.storage.sync.set({
+                    targetMap: {
+                        id: targetMap.id,
+                        name: targetMap.name,
+                        slug: targetMap.slug
+                    }
+                }, function () {
+                    hotelsToMap(hotels, stored, api);
+                });
+            });
+        } else {
+            hotelsToMap(hotels, stored, api);
+        }
+    });
+}
+
 chrome.pageAction.onClicked.addListener(function(tab) {
-    console.log('clicked');
-    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', url: tab.url });
+    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url) }, (hotels) => {
+        console.log('hotels', hotels);
+
+        if (hotels && hotels.length) {
+            map(hotels);
+        }
+    });
 });
 
 function pageActionPopup(tabId) {
