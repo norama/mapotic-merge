@@ -1,13 +1,13 @@
 
-import { categoryEqual, attributeEqual } from './util/equal';
-import { chain } from './util/promise';
+import { categoryEqual, attributeEqual } from './util/equal.js';
+import { chain } from './util/promise.js';
 
 import { distance2 } from './util/geo.js';
 
-import { toCsv } from './util/data';
+import { toCsv } from './util/data.js';
 
 import { PARENT_ATTRIBUTE } from './Constants.js';
-import Places from './Places';
+import Places from './Places.js';
 
 class Mapotic {
 

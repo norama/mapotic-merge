@@ -1,6 +1,6 @@
-import { BASE_DEFINITION, PARENT_ATTRIBUTE } from './Constants';
+import { BASE_DEFINITION, PARENT_ATTRIBUTE } from './Constants.js';
 
-import { attributeEqual } from './util/equal';
+import { attributeEqual } from './util/equal.js';
 
 class Places {
 

@@ -1,44 +1,6 @@
 import { chain } from '../api/util/promise.js';
 
-const attributes = [{
-    attribute_type: "inputtext",
-    icon: "im-bus-stop",
-    name: { en: "Název" },
-    permission: "user",
-    is_required: false,
-    settings: {}
-}, {
-    attribute_type: "inputtext",
-    icon: "im-office2",
-    name: { en: "Místo" },
-    permission: "user",
-    is_required: false,
-    settings: {}
-}, {
-    attribute_type: "inputtext",
-    icon: "im-earth2",
-    name: { en: "Web" },
-    permission: "user",
-    is_required: false,
-    settings: {}
-}, {
-    attribute_type: "inputtext",
-    icon: "im-dollar2",
-    name: { en: "Cena" },
-    permission: "user",
-    is_required: false,
-    settings: {}
-}];
-
-const categories = [{
-    name: { en: "Hotel" },
-    color: "ff3a36",
-    icon: "im-bed"
-}, {
-    name: { en: "Hotel - už je pozdě" },
-    color: "ff3a36",
-    icon: "im-clock-o"
-}];
+import { ATTRIBUTES, CATEGORIES } from './constants.js';
 
 function createTargetMap(center, api) {
 
@@ -66,12 +28,12 @@ function createTargetMap(center, api) {
 
             // end of workaround
             ))
-        ).then(
-            chain(attributes.map((attr) => (
+        ).then(() => (
+            chain(ATTRIBUTES.map((attr) => (
                 api.postJson('/maps/' + targetMap.id + '/attributes/', attr)
             )))
-        ).then(
-            chain(categories.map((cat) => (
+        )).then((attributes) => (
+            chain(CATEGORIES.map((cat) => (
                 // workaround: subsequent POST category requests cause error 500 on server
                 api.getJson('/maps/' + targetMap.id + '/categories/').then(() => (
 
@@ -79,8 +41,12 @@ function createTargetMap(center, api) {
 
                 // end of workaround
                 ))
-            )))
-        ).then(() => (targetMap)));
+            ))).then(() => (attributes))
+        )).then((attributes) => (
+            api.getJson('/maps/' + targetMap.id + '/').then((targetMap) => ({
+                targetMap, attributes
+            }))
+        )));
     });
 }
 

@@ -1,5 +1,6 @@
 import Api from '../api/Api.js';
 import createTargetMap from './createTargetMap.js';
+import importHotels from './importHotels.js';
 
 function bookingType(url) {
     if (url.startsWith("https://www.booking.com/searchresults")) {
@@ -27,45 +28,66 @@ function center(hotels) {
     };
 }
 
-function hotelsToMap(hotels, stored) {
-    //chrome.notifications.create({ title: 'title', message: 'message', iconUrl: "icons/icon48.png", type: "basic" });
+function openMap(targetMap, display) {
+    const url = "https://www.mapotic.com/" + targetMap.slug;
+    if (display === "window") {
+        chrome.windows.create({ url });
+    } else {
+        chrome.tabs.create({ url });
+    }
 }
 
 function handleError(error, title='ERROR') {
     chrome.notifications.create({ title, message: error, iconUrl: "icons/icon48.png", type: "basic" });
 }
 
-function map(hotels) {
+function hotelsToMap(hotels, stored, callback) {
+    const api = new Api(stored.mapoticAuth, handleError);
+    return importHotels(hotels, stored.targetMap, api).then(() => {
+        openMap(stored.targetMap, stored.display);
+    }).finally(callback);
+}
+
+function map(hotels, callback) {
     chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
-        const api = new Api(stored.mapoticAuth);
         if (!stored.targetMap) {
-            createTargetMap(center(hotels), api).then((targetMap) => {
+            const api = new Api(stored.mapoticAuth);
+            createTargetMap(center(hotels), api).then(({ targetMap, attributes }) => {
                 console.log('targetMap', targetMap);
+                attributes = attributes.map((attr) => (
+                    { id: attr.id, name: attr.name.en }
+                ));
+                console.log('attributes', attributes);
                 chrome.storage.sync.set({
                     targetMap: {
                         id: targetMap.id,
                         name: targetMap.name,
-                        slug: targetMap.slug
+                        slug: targetMap.slug,
+                        attributes
                     }
                 }, function () {
-                    hotelsToMap(hotels, stored);
+                    map(hotels, callback);
                 });
             }).catch((error) => {
                 console.error(error);
                 handleError('Try to logout/login.', 'Could not create target map.');
             });
         } else {
-            hotelsToMap(hotels, stored);
+            hotelsToMap(hotels, stored, callback);
         }
     });
 }
 
 chrome.pageAction.onClicked.addListener(function(tab) {
     chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url) }, (hotels) => {
+        chrome.pageAction.hide(tab.id);
+
         console.log('hotels', hotels);
 
         if (hotels && hotels.length) {
-            map(hotels);
+            map(hotels, () => {
+                chrome.pageAction.show(tab.id);
+            });
         }
     });
 });
