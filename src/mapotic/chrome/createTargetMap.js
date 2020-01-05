@@ -1,18 +1,15 @@
 import { chain } from '../api/util/promise.js';
 
-import { ATTRIBUTES, CATEGORIES } from './constants.js';
+import { ATTRIBUTES, CATEGORIES, CENTER } from './constants.js';
 
-function createTargetMap(center, api) {
+function createTargetMap(api) {
 
     return api.postJson('/maps/create/', {
         name: "booking",
         description: "Merge hotels from booking.com with places of your interest.",
         topic: 9,
         lang: "cs",
-        center: {
-            type: "Point",
-            coordinates: [center.lon, center.lat]
-        }
+        center: CENTER
     }).then((targetMap) => {
         const origCategory = targetMap.categories[0];
         const origAttributeIds = targetMap.categories[0].attributes;

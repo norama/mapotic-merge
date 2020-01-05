@@ -16,18 +16,6 @@ chrome.runtime.onInstalled.addListener(function() {
     console.log('mapotic booking installed');
 });
 
-function avg(arr) {
-    const sum = arr.reduce((acc, x) => acc + x, 0);
-    return sum / arr.length;
-}
-
-function center(hotels) {
-    return {
-        lon: avg(hotels.map(hotel => hotel.lon)),
-        lat: avg(hotels.map(hotel => hotel.lat))
-    };
-}
-
 function openMap(targetMap, display) {
     const url = "https://www.mapotic.com/" + targetMap.slug;
     if (display === "window") {
@@ -52,7 +40,7 @@ function map(hotels, callback) {
     chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
         if (!stored.targetMap) {
             const api = new Api(stored.mapoticAuth);
-            createTargetMap(center(hotels), api).then(({ targetMap, attributes }) => {
+            createTargetMap(api).then(({ targetMap, attributes }) => {
                 console.log('targetMap', targetMap);
                 attributes = attributes.map((attr) => (
                     { id: attr.id, name: attr.name.en }

@@ -54,3 +54,8 @@ export const BASE_DEFINITION = [{
     "type": "image_url",
     "name": "Adresa obrázku"
 }];
+
+export const CENTER = {
+    type: "Point",
+    coordinates: [14.427178, 50.081764]
+};
