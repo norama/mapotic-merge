@@ -20,7 +20,7 @@ function slug(url) {
 
 const Merge = ({ api, targetMap }) => {
 
-    const [ cookies, setCookie, removeCookie ] = useCookies(['mapoticArea']);
+    const [ cookies, setCookie ] = useCookies(['mapoticArea']);
 
     const [ sourceMapUrl, setSourceMapUrl ] = useState('');
     const [ sourceMap, setSourceMap ] = useState(null);

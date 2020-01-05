@@ -1,22 +1,16 @@
 import React from 'react';
-import { Button, InputGroupText, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { InputGroupText, FormGroup, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { LATLON_PATTERN } from '../mapotic/api/util/geo';
 
 import './Area.css';
 
 const Area = ({ area, onChange }) => {
 
-    const handleLatChange = (event) => {
+    const handleLatLonChange = (event) => {
+        const latlon = event.target.value.split(',');
         onChange({
-            lat: event.target.value,
-            lon: area.lon,
-            dist: area.dist
-        });
-    };
-
-    const handleLonChange = (event) => {
-        onChange({
-            lat: area.lat,
-            lon: event.target.value,
+            lat: parseFloat(latlon[0]),
+            lon: parseFloat(latlon[1]),
             dist: area.dist
         });
     };
@@ -31,25 +25,32 @@ const Area = ({ area, onChange }) => {
 
     return (
         <FormGroup className="__Area__">
-            <InputGroup>
+            <InputGroup className="location">
                 <InputGroupAddon addonType="prepend">
-                    <InputGroupText>Lat</InputGroupText>
+                    <InputGroupText>Location (lat,lon)</InputGroupText>
                 </InputGroupAddon>
-                <Input type="number" step="0.000001" placeholder="latitude" value={area.lat} onChange={handleLatChange} />
-            </InputGroup>
-
-            <InputGroup className="lon">
-                <InputGroupAddon addonType="prepend">
-                    <InputGroupText>Lon</InputGroupText>
-                </InputGroupAddon>
-                <Input type="number" step="0.000001" placeholder="longitude" value={area.lon} onChange={handleLonChange} />
+                <Input
+                    type="text"
+                    placeholder="lat,lon"
+                    title="comma-separated lat,lon coordinates, copy from Mapotic"
+                    pattern={LATLON_PATTERN}
+                    value={"" + area.lat + "," + area.lon}
+                    onChange={handleLatLonChange}
+                />
             </InputGroup>
 
             <InputGroup>
                 <InputGroupAddon addonType="prepend">
                     <InputGroupText>Dist (km)</InputGroupText>
                 </InputGroupAddon>
-                <Input type="number" placeholder="distance" value={area.dist} onChange={handleDistChange} />
+                <Input
+                    type="number"
+                    min="1"
+                    placeholder="distance"
+                    title="max distance from location in km"
+                    value={area.dist}
+                    onChange={handleDistChange}
+                />
             </InputGroup>
         </FormGroup>
     );

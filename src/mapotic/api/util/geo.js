@@ -7,3 +7,9 @@ export function distance2(lat, lon, lat0, lon0) {
     const y = (lon - lon0) * Math.cos(lat0);
     return deglen2 * (x*x + y*y);
 }
+
+
+// https://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
+
+// eslint-disable-next-line
+export const LATLON_PATTERN = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)\s*,\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';

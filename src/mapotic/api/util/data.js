@@ -5,7 +5,7 @@ function escape(item) {
     if ((item.indexOf(',') === -1) && (item.indexOf('\n') === -1)) {
         return item;
     }
-    // item = item.replace(/\"/g, '""');
+    // eslint-disable-next-line
     item = item.replace(/\"/g, "'");
     return '"' + item + '"';
 }

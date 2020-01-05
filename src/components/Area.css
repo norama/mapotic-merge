@@ -4,7 +4,10 @@
     border: 1px solid darkgray;
 }
 
-.__Area__ .lon {
-    margin-left: 20px;
-    margin-right: 40px;
+.__Area__ .location {
+    margin-right: 20px;
+}
+
+.__Area__ .location input {
+    width: 350px;
 }
