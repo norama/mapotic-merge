@@ -1,4 +1,5 @@
 import Mapotic from '../api/Mapotic.js';
+import { point } from '../api/util/geo.js';
 
 import { CATEGORIES, BASE_DEFINITION } from './constants.js';
 
@@ -14,10 +15,7 @@ function center(hotels) {
     const lon = avg(hotels.map(hotel => hotel.lon));
     const lat = avg(hotels.map(hotel => hotel.lat));
 
-    return {
-        type: "Point",
-        coordinates: [lon, lat]
-    };
+    return point({ lon, lat });
 }
 
 function importHotels(hotels, targetMap, api, setProgress=console.log) {

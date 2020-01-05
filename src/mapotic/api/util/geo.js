@@ -13,3 +13,11 @@ export function distance2(lat, lon, lat0, lon0) {
 
 // eslint-disable-next-line
 export const LATLON_PATTERN = '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)\s*,\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$';
+
+
+export function point({ lat, lon }) {
+    return {
+        type: "Point",
+        coordinates: [lon, lat]
+    };
+}

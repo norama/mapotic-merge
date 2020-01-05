@@ -11,6 +11,8 @@ import { CookieOptions, DefaultArea } from './Main';
 
 import Mapotic from '../mapotic/api/Mapotic';
 
+import { point } from '../mapotic/api/util/geo';
+
 import './Merge.css';
 
 function slug(url) {
@@ -82,7 +84,11 @@ const Merge = ({ api, targetMap }) => {
             selectedCategories,
             area,
             setProgress
-        ).then(({
+        ).then((response) => (
+            api.patchJson('/maps/' + targetMap.id + '/', {
+                center: point(area)
+            }).then(() => (response))
+        )).then(({
             addedCategories,
             places,
             importId
