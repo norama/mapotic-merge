@@ -31,9 +31,15 @@ function handleError(error, title='ERROR') {
 
 function hotelsToMap(hotels, stored, callback) {
     const api = new Api(stored.mapoticAuth, handleError);
-    return importHotels(hotels, stored.targetMap, api).then(() => {
-        openMap(stored.targetMap, stored.display);
-    }).finally(callback);
+    chrome.notifications.create({ title: "Adding hotels to map...", message: "please wait", iconUrl: "icons/icon48.png", type: "progress", progress: 0 }, (notificationId) => {
+        const setProgress = (progress) => {
+            chrome.notifications.update(notificationId, { progress: progress.importing });
+        };
+
+        importHotels(hotels, stored.targetMap, api, setProgress).then(() => {
+            openMap(stored.targetMap, stored.display);
+        }).finally(callback);
+    });
 }
 
 function map(hotels, callback) {
