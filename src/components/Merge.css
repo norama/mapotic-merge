@@ -13,7 +13,10 @@
 }
 
 .__Merge__ .merge-form {
-    width: 600px;
+    width: 750px;
+    height: 70vh;
+    padding: 20px;
+    overflow-y: auto;
     margin: 100px auto;
 }
 
@@ -41,7 +44,7 @@
     bottom: 50px;
     left: 50%;
     transform: translate(-50%, 0);
-    width: 600px;
+    width: 650px;
 }
 
 .__Merge__ .progress-link {
