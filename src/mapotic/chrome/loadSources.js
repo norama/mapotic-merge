@@ -21,10 +21,11 @@ function selectedCategories(selectedCategoryNames, categories) {
 }
 
 function loadSource(source, api) {
-    return api.getJson('/maps/by-slug/' + slug(source.map) + '/').then((map) => {
+    const sourceMapSlug = slug(source.map);
+    return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
         console.log('sourceMap', map);
         const mapotic = new Mapotic(api, map.id);
-        return mapotic.loadMap().then((sourceMap) => ({
+        return mapotic.loadMap(sourceMapSlug).then((sourceMap) => ({
             map: { ...sourceMap, url: source.map },
             name: source.name,
             selectedCategories: selectedCategories(source.categories, sourceMap.categories)

@@ -28,14 +28,14 @@ class Mapotic {
         return this.api.getJson('/maps/' + this.mapId + '/pois.geojson/').then((response) => (response.features));
     }
 
-    loadMap = () => {
+    loadMap = (slug) => {
         return this.loadAttributes().then((attributes) => {
             console.log('attributes', attributes);
             return this.loadCategories().then((categories) => {
                 console.log('categories', categories);
                 return this.loadPlaces().then((places) => {
                     console.log('places', places);
-                    return { attributes, categories, places, id: this.mapId };
+                    return { attributes, categories, places, slug, id: this.mapId };
                 });
             });
         });

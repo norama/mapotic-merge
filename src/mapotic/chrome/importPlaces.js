@@ -13,14 +13,13 @@ function importPlaces(sources, areas, targetMap, api, updateProgress) {
             updateProgress({
                 progress,
                 title: "" + source.name + ": " + slug(source.map.url),
-                message: "" +(index+1) + "/" + sources.length
+                message: "" + (index + 1) + "/" + sources.length
             });
         };
 
-        return mapotic.merge(source.map, source.selectedCategories, areas, console.log /* setProgress */).then((response) => {
-            setProgress(Math.floor((index + 1) * (100 / sources.length)));
-            return response;
-        });
+        setProgress(Math.floor((index + 1) * (100 / sources.length)));
+
+        return mapotic.merge(source.map, source.selectedCategories, areas, console.log);
     }));
 }
 

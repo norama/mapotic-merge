@@ -39,20 +39,15 @@ function hotelsToMap(hotels, stored, callback) {
             chrome.notifications.update(notificationId, { progress: progress.importing });
         };
 
-        importHotels(hotels, stored.targetMap, api, setProgress).finally(callback);
+        importHotels(hotels, stored.targetMap, api, setProgress).then(() => {
+            chrome.notifications.clear(notificationId);
+        }).finally(callback);
     });
 }
 
 function placesToMap(areas, stored, callback) {
     chrome.notifications.create({ title: "Collecting places...", message: "loading sources", iconUrl: "icons/icon48.png", type: "progress", progress: 0 }, (notificationId) => {
         const updateProgress = ({ progress, title, message }) => {
-            /*
-            chrome.notifications.update(notificationId, {
-                title,
-                message: progress.collecting < 100 ? "Collecting data ..." : (progress.importing < 100 ? "Importing data ..." : ""), 
-                progress: Math.floor(progress.collecting / 2 + progress.importing / 2)
-            });
-            */
             chrome.notifications.update(notificationId, {
                 progress,
                 title,

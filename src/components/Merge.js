@@ -45,7 +45,7 @@ const Merge = ({ api, targetMap }) => {
         return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
             console.log('sourceMap', map);
             const mapotic = new Mapotic(api, map.id);
-            return mapotic.loadMap().then(setSourceMap);
+            return mapotic.loadMap(sourceMapSlug).then(setSourceMap);
         });
     };
 
@@ -76,7 +76,7 @@ const Merge = ({ api, targetMap }) => {
         setProgress({ collecting: 0, importing: 0 });
         const mapotic = new Mapotic(api, targetMap.id);
         mapotic.merge(
-            {...sourceMap, slug: slug(sourceMapUrl)},
+            sourceMap,
             selectedCategories,
             area,
             setProgress
