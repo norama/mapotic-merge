@@ -1,34 +1,34 @@
 const config = {
     collections: [{
         name: "swimming",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/sauny"
         }, {
             map: "https://www.mapotic.com/swimplaces"
         }]
     }, {
         name: "skiing",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/winter-holidays-in-the-alps",
             categories: ["Ski center", "Glacier"]
         }]
     }, {
         name: "nature",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/chranena-uzemi"
         }, {
             map: "https://www.mapotic.com/vodopady-ceske-republiky"
         }]
     }, {
         name: "culture",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/praha-galerie"
         }, {
             map: "https://www.mapotic.com/festivals-europe"
         }]
     }, {
         name: "drinking",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/wineofczechia",
             categories: ["Vinařství", "Na skleníčku Pro láhev", "Nevinářství", "Vše pro vino"]
         }, {
@@ -38,7 +38,7 @@ const config = {
         }]
     }, {
         name: "shopping",
-        places: [{
+        sources: [{
             map: "https://www.mapotic.com/smarty-drink"
         }]
     }]

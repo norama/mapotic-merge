@@ -12,13 +12,9 @@ import { CookieOptions, DefaultArea } from './Main';
 import Mapotic from '../mapotic/api/Mapotic';
 
 import { point } from '../mapotic/api/util/geo';
+import { slug } from '../mapotic/api/util/data';
 
 import './Merge.css';
-
-function slug(url) {
-    const k = url.lastIndexOf('/');
-    return (k !== -1) ? url.substring(k + 1) : null;
-}
 
 const Merge = ({ api, targetMap }) => {
 

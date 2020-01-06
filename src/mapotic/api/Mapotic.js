@@ -3,7 +3,7 @@ import { categoryEqual, attributeEqual } from './util/equal.js';
 import { chain } from './util/promise.js';
 
 import { distance2 } from './util/geo.js';
-
+import { toArray } from './util/array.js';
 import { toCsv } from './util/data.js';
 
 import { PARENT_ATTRIBUTE } from './Constants.js';
@@ -109,11 +109,16 @@ class Mapotic {
                 icon: category.icon
             }).then((newCategory) => {
 
+                // workaround ...
+                if (!newCategory) {
+                    return null;
+                }
+
                 // category target attribute ids without parent
                 let attributeIds = category.attributes.map((a) => (attributeMap[a]));
                 attributeIds = attributeIds.filter((id) => (id !== PARENT_ATTRIBUTE.id));
 
-                // add category target parent attribute ir to the end
+                // add category target parent attribute id to the end
                 const parentAttribute = attributes.find((attribute) => (attributeEqual(attribute, PARENT_ATTRIBUTE)));
                 const index = attributeIds.indexOf(parentAttribute.id);
                 if (index >= 0) {
@@ -152,14 +157,15 @@ class Mapotic {
         return sourcePlaces.filter((place) => (catIds.has(place.properties.category)));
     };
 
-    filterPlacesByArea = (sourcePlaces, area) => {
-        const maxd2 = area.dist * area.dist;
+    filterPlacesByAreas = (sourcePlaces, areas) => {
         return sourcePlaces.filter((place) => (
+            areas.some((area) =>(
                 distance2(
                     place.geometry.coordinates[1], place.geometry.coordinates[0],
                     area.lat, area.lon
-                ) <= maxd2
-            ));
+                ) <= area.dist2
+            ))
+        ));
     };
 
     fetchPlaces = (sourcePlaces, sourceMapId, setProgress) => {
@@ -173,13 +179,13 @@ class Mapotic {
         )));
     };
 
-    filterPlaces = (sourcePlaces, categories, area) => {
+    filterPlaces = (sourcePlaces, categories, areas) => {
         
         // filter by category
         let places = this.filterPlacesByCategories(sourcePlaces, categories);
 
         // filter by area
-        return this.filterPlacesByArea(places, area);
+        return this.filterPlacesByAreas(places, areas);
     };
 
     doImport = (definition, data, setProgress) => {
@@ -234,6 +240,8 @@ class Mapotic {
 
     merge = (sourceMap, selectedCategories, area, setProgress) => {
 
+        const areas = toArray(area).map((a) => ({ ...a, dist2: a.dist * a.dist }));
+
         return this.loadAttributes().then((targetAttributes) => {
             console.log('targetAttributes', targetAttributes);
             return this.loadCategories().then((targetCategories) => {
@@ -250,7 +258,7 @@ class Mapotic {
                         setProgress({ collecting: 20, importing: 0 });
                         console.log('Missing categories added.', addedCategories);
 
-                        const places = this.filterPlaces(sourceMap.places, selectedCategories, area);
+                        const places = this.filterPlaces(sourceMap.places, selectedCategories, areas);
                         console.log('places to be added', places);
 
                         if (places.length) {

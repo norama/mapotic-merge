@@ -17,3 +17,8 @@ export function toCsv(data) {
     data = data.map((row) => (row.map((item) => escape(item))));
     return data.map((row) => (row.join(','))).join('\n');
 }
+
+export function slug(url) {
+    const k = url.lastIndexOf('/');
+    return (k !== -1) ? url.substring(k + 1) : null;
+}

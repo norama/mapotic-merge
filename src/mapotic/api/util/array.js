@@ -11,3 +11,13 @@ export function multiUnion(arrs) {
     });
     return [...new Set(all)];
 }
+
+export function toArray(obj) {
+    if (!obj) {
+        return obj;
+    }
+    if (Array.isArray(obj)) {
+        return obj;
+    }
+    return [ obj ];
+}
