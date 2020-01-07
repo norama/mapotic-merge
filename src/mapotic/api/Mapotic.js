@@ -69,7 +69,7 @@ class Mapotic {
             return acc;
         }, []);
 
-        return chain((newAttributes.map((attribute) => (
+        const postAttribute = (attribute) => (
             this.api.postJson('/maps/' + this.mapId + '/attributes/', {
                 attribute_type: attribute.attribute_type,
                 icon: attribute.icon,
@@ -78,7 +78,13 @@ class Mapotic {
                 is_required: attribute.is_required,
                 settings: attribute.settings
             })
-        )))).then((newTargetAttributes) => {
+        );
+
+        const deleteAttributeFromCategory = (attribute, category) => (
+            this.api.deleteJson('/maps/' + this.mapId + '/categories/' + category.id + '/attributes/' + attribute.id +'/')
+        );
+
+        return chain((index) => (postAttribute(newAttributes[index])), newAttributes.length).then((newTargetAttributes) => {
             for (let i=0; i < newAttributes.length; ++i) {
                 this.extendAttributeMap(attributeMap, newAttributes[i], newTargetAttributes[i]);
             }
@@ -86,9 +92,7 @@ class Mapotic {
         }).then((newTargetAttributes) => (
             // remove from all categories (to be added to new categories only)
             Promise.all(targetCategories.map((category) => (
-                chain(newTargetAttributes.map((attribute) => (
-                    this.api.deleteJson('/maps/' + this.mapId + '/categories/' + category.id + '/attributes/' + attribute.id +'/')
-                )))
+                chain((index) => (deleteAttributeFromCategory(newTargetAttributes[index], category)), newTargetAttributes.length)
             )))
         )).then(this.loadAttributes).then((attr) => ({
             attributes: attr,
@@ -98,24 +102,24 @@ class Mapotic {
 
     mergeCategories = (categories, attributes, attributeMap) => {
         const categoryBaseUrl = '/maps/' + this.mapId + '/categories/';
-        return chain(categories.map((category) => (
 
-            // workaround: subsequent POST category requests cause error 500 on server
-            this.api.getJson(categoryBaseUrl).then(() => (
-
+        const postCategory = (category) => (
             this.api.postJson(categoryBaseUrl, {
                 name: { en: category.name.en.trim() },
                 color: category.color,
                 icon: category.icon
-            }).then((newCategory) => {
+            })
+        );
 
-                // workaround ...
+        return chain((index) => (postCategory(categories[index])), categories.length).then((newCategories) => (
+
+            Promise.all(newCategories.map((newCategory, catIndex) => {
                 if (!newCategory) {
                     return null;
                 }
 
                 // category target attribute ids without parent
-                let attributeIds = category.attributes.map((a) => (attributeMap[a]));
+                let attributeIds = categories[catIndex].attributes.map((a) => (attributeMap[a]));
                 attributeIds = attributeIds.filter((id) => (id !== PARENT_ATTRIBUTE.id));
 
                 // add category target parent attribute id to the end
@@ -141,11 +145,9 @@ class Mapotic {
                         this.api.putJson(categoryBaseUrl + newCategory.id + '/attributes/' + attrId +'/', { position: index })
                     ))).then(() => (newCategory));
                 });
-            })
+            }))
 
-            // end of workaround
-            ))
-        )));
+        ));
     };
 
     filterPlacesByCategories = (sourcePlaces, categories) => {

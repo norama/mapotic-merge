@@ -8,19 +8,22 @@ function importPlaces(sources, areas, targetMap, api, updateProgress) {
 
     console.log('sources', sources);
 
-    return chain(sources.map((source, index) => {
-        const setProgress = (progress) => {
-            updateProgress({
-                progress,
-                title: "" + source.name + ": " + slug(source.map.url),
-                message: "" + (index + 1) + "/" + sources.length
+    const mergeSource = (index) => (
+        new Promise((resolve) => {
+            const source = sources[index];
+            mapotic.merge(source.map, source.selectedCategories, areas, console.log).then((response) => {
+                updateProgress({
+                    progress: Math.floor((index + 1) * (100 / sources.length)),
+                    title: "" + source.name + ": " + slug(source.map.url),
+                    message: "" + (index + 1) + "/" + sources.length
+                }, () => {
+                    resolve(response);
+                });
             });
-        };
+        })
+    );
 
-        setProgress(Math.floor((index + 1) * (100 / sources.length)));
-
-        return mapotic.merge(source.map, source.selectedCategories, areas, console.log);
-    }));
+    return chain(mergeSource, sources.length);
 }
 
 export default importPlaces;

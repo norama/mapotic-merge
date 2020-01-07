@@ -48,6 +48,10 @@ class Places {
         return place.rating.average ? Math.round(place.rating.average) : 1
     }
 
+    image(place) {
+        return place.image ? place.image.image.medium : '';
+    }
+
     videoLink(value) {
         if (value.youtube) {
             return 'https://www.youtube.com/watch?v=' + value.youtube;
@@ -91,7 +95,7 @@ class Places {
                 place.point.coordinates[1],
                 this.id(place),
                 this.rating(place),
-                place.image.image.medium
+                this.image(place)
             ];
 
             // continue with custom attributes

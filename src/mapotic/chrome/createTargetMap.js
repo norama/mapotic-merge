@@ -13,32 +13,25 @@ function createTargetMap(api) {
     }).then((targetMap) => {
         const origCategory = targetMap.categories[0];
         const origAttributeIds = targetMap.categories[0].attributes;
+
+        const deleteAttribute = (attrId) => (
+            api.deleteJson('/maps/' + targetMap.id + '/attributes/' + attrId + '/')
+        );
+
+        const postAttribute = (attr) => (
+            api.postJson('/maps/' + targetMap.id + '/attributes/', attr)
+        );
+
+        const postCategory = (cat) => (
+            api.postJson('/maps/' + targetMap.id + '/categories/', cat)
+        );
+
         return api.deleteJson('/maps/' + targetMap.id + '/categories/' + origCategory.id + '/').then(() => (
-            // workaround: subsequent POST category requests cause error 500 on server
-            api.getJson('/maps/' + targetMap.id + '/categories/').then(() => (
-
-            chain(origAttributeIds.map((attrId) => (
-                api.deleteJson('/maps/' + targetMap.id + '/attributes/' + attrId + '/').then(() => (
-                    api.getJson('/maps/' + targetMap.id + '/attributes/') // part of workaround
-                ))
-            )))
-
-            // end of workaround
-            ))
+            chain((index) => (deleteAttribute(origAttributeIds[index])), origAttributeIds.length)
         ).then(() => (
-            chain(ATTRIBUTES.map((attr) => (
-                api.postJson('/maps/' + targetMap.id + '/attributes/', attr)
-            )))
+            chain((index) => (postAttribute(ATTRIBUTES[index])), ATTRIBUTES.length)
         )).then((attributes) => (
-            chain(CATEGORIES.map((cat) => (
-                // workaround: subsequent POST category requests cause error 500 on server
-                api.getJson('/maps/' + targetMap.id + '/categories/').then(() => (
-
-                    api.postJson('/maps/' + targetMap.id + '/categories/', cat)
-
-                // end of workaround
-                ))
-            ))).then(() => (attributes))
+            chain((index) => (postCategory(CATEGORIES[index])), CATEGORIES.length).then(() => (attributes))
         )).then((attributes) => (
             api.getJson('/maps/' + targetMap.id + '/').then((targetMap) => ({
                 targetMap, attributes

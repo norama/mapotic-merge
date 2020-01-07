@@ -46,17 +46,19 @@ function hotelsToMap(hotels, stored, callback) {
 }
 
 function placesToMap(areas, stored, callback) {
-    chrome.notifications.create({ title: "Collecting places...", message: "loading sources", iconUrl: "icons/icon48.png", type: "progress", progress: 0 }, (notificationId) => {
-        const updateProgress = ({ progress, title, message }) => {
+    chrome.notifications.create({ title: "Importing ...", message: "loading sources", iconUrl: "icons/icon48.png", type: "progress", progress: 0, requireInteraction: true }, (notificationId) => {
+        const updateProgress = ({ progress, title, message }, progressCallback) => {
             chrome.notifications.update(notificationId, {
                 progress,
                 title,
                 message
-            });
+            }, progressCallback);
         };
 
         loadSources(stored.collections, new Api(stored.mapoticAuth)).then((sources) => {
             console.log('sources', sources);
+
+            updateProgress({ progress: 2, message: "importing places"});
 
             return importPlaces(
                 sources,
@@ -68,7 +70,10 @@ function placesToMap(areas, stored, callback) {
         }).catch((error) => {
             console.error(error);
             handleError('Could not load sources.', 'Try to change collections in options.');
-        }).finally(callback);
+        }).finally(() => {
+            chrome.notifications.clear(notificationId);
+            callback()
+        });
     });
 }
 
