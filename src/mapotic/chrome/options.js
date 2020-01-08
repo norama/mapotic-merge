@@ -99,6 +99,24 @@ function setLoginHandler() {
     });
 }
 
+function setCollectionsChangeHandler() {
+    const nothingSelected = () => config.collections.every((coll) => (
+        !document.getElementById(coll.name + "Input").checked
+    ));
+
+    const setAllSelected = () => config.collections.forEach((collection) => {
+        document.getElementById(collection.name + "Input").checked = true;
+    });
+
+    config.collections.forEach((collection) => {
+        document.getElementById(collection.name + "Input").addEventListener("change", function() {
+            if (nothingSelected()) {
+                setAllSelected();
+            }
+        });
+    });
+}
+
 function setLocalizedTexts() {
     const ids = [
         "mapoticLogin",
@@ -131,6 +149,7 @@ function onLoad() {
     setSaveHandler();
     setLogoutHandler();
     setLoginHandler();
+    setCollectionsChangeHandler();
 }
 
 document.addEventListener("DOMContentLoaded", onLoad);
