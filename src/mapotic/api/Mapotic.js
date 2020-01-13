@@ -200,6 +200,9 @@ class Mapotic {
         fd.append('source_file', new File([toCsv(data)], 'data.csv'));
         return this.api.postDataSource(importBaseUrl, fd).then((response) => {
             console.log('DataSource posted', response);
+            if (!response) {
+                return null;
+            }
             const importId = response.id;
             return this.api.patchJson(importBaseUrl + '/' + importId + '/', {
                 definition

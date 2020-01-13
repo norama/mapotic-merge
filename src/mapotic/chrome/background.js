@@ -113,7 +113,7 @@ function map(hotels, callback) {
 }
 
 chrome.pageAction.onClicked.addListener(function(tab) {
-    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url) }, (hotels) => {
+    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url), url: tab.url }, (hotels) => {
         chrome.pageAction.hide(tab.id);
 
         console.log('hotels', hotels);

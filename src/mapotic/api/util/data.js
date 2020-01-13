@@ -2,9 +2,11 @@ function escape(item) {
     if (!(typeof(item) === 'string')) {
         return item;
     }
-    if ((item.indexOf(',') === -1) && (item.indexOf('\n') === -1)) {
+
+    if ((item.indexOf(',') === -1) && (item.indexOf(';') === -1) && (item.indexOf('\n') === -1)) {
         return item;
     }
+
     // eslint-disable-next-line
     item = item.replace(/\"/g, "'");
     return '"' + item + '"';
