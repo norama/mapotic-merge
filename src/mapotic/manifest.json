@@ -35,6 +35,7 @@
     },
     "content_scripts": [{
         "matches": ["https://www.booking.com/*"],
-        "js": ["chrome/content.js"]
+        "js": ["chrome/content.js"],
+        "run_at": "document_start"
     }]
 }

@@ -126,3 +126,33 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mapIds = [
+        'b_google_map_thumbnail',
+        'map-header-cta',
+        'hotel_sidebar_static_map'
+    ];
+    const mapClassName = 'bui-link';
+
+    let mapLinks = new Set();
+
+    mapIds.forEach((mapId) => {
+        const mapLink = document.getElementById(mapId);
+        if (mapLink) {
+            mapLinks.add(mapLink);
+        }
+    });
+
+    [...document.getElementsByClassName(mapClassName)].forEach((mapLink) => {
+        mapLinks.add(mapLink);
+    });
+
+    mapLinks.forEach((mapLink) => {
+        mapLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            chrome.runtime.sendMessage({ message: 'clicked_map' });
+        });
+    })
+});

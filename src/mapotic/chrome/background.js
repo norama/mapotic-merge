@@ -5,6 +5,13 @@ import importHotels from './importHotels.js';
 import loadSources from './loadSources.js';
 import importPlaces from './importPlaces.js';
 
+function doInCurrentTab(tabCallback) {
+    chrome.tabs.query(
+        { currentWindow: true, active: true },
+        function (tabArray) { tabCallback(tabArray[0]); }
+    );
+}
+
 function bookingType(url) {
     if (url.startsWith("https://www.booking.com/searchresults")) {
         return "searchresults";
@@ -112,7 +119,7 @@ function map(hotels, callback) {
     });
 }
 
-chrome.pageAction.onClicked.addListener(function(tab) {
+function main(tab) {
     chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url), url: tab.url }, (hotels) => {
         chrome.pageAction.hide(tab.id);
 
@@ -124,7 +131,17 @@ chrome.pageAction.onClicked.addListener(function(tab) {
             });
         }
     });
-});
+}
+
+chrome.pageAction.onClicked.addListener(main);
+
+chrome.runtime.onMessage.addListener(
+    function(request) {
+        if (request.message === 'clicked_map') {
+            doInCurrentTab(main);
+        }
+    }
+);
 
 function pageActionPopup(tabId) {
     chrome.storage.sync.get(["mapoticAuth"], function(stored) {
@@ -154,13 +171,6 @@ chrome.tabs.onUpdated.addListener(pageAction);
 chrome.tabs.onActivated.addListener(({ tabId }) => {
     pageActionPopup(tabId);
 })
-
-function doInCurrentTab(tabCallback) {
-    chrome.tabs.query(
-        { currentWindow: true, active: true },
-        function (tabArray) { tabCallback(tabArray[0]); }
-    );
-}
 
 function storageAction(changes, area) {
     if (area === "sync") {
