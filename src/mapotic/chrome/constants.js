@@ -51,6 +51,9 @@ export const BASE_DEFINITION = [{
     "type": "lat",
     "name": "Zeměpisná šířka"
 }, {
+    "type": "id",
+    "name": "ID záznamu"
+}, {
     "type": "image_url",
     "name": "Adresa obrázku"
 }];

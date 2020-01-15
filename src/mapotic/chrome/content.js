@@ -67,6 +67,7 @@ class Scraper {
             [...document.querySelectorAll('div.sr_item')];
 
         const hotelsData = hotelsHtml.map((hotelHtml) => {
+            const id = hotelHtml.getAttribute('data-hotelid');
             const link = hotelHtml.querySelector('a.sr_item_photo_link.sr_hotel_preview_track');
             const url = "https://www.booking.com" + link.getAttribute('href');
             const img = link.querySelector('img.hotel_image').getAttribute('src');
@@ -91,7 +92,7 @@ class Scraper {
             const soldOut = !!content.querySelector('span.sold_out_property');
 
             return {
-                name, place, url, img, lon, lat, price, soldOut
+                id, name, place, url, img, lon, lat, price, soldOut
             };
         });
 
@@ -99,6 +100,8 @@ class Scraper {
     }
 
     scrapeHotel() {
+        const form = document.querySelector('form#top-book');
+        const id = form.querySelector('input[name="hotel_id"]').getAttribute('value');
         const name = normalizeName(document.querySelector('#hp_hotel_name').textContent);
         const place = normalize(document.querySelector('#showMap2 span[data-source=top_link]').textContent);
         const url = this.url;
@@ -114,7 +117,7 @@ class Scraper {
         const price = toPriceIntervalString(minPriceNum, maxPriceNum);
         const soldOut = !priceStrings.length;
         return [{
-            name, place, url, img, lon, lat, price, soldOut
+            id, name, place, url, img, lon, lat, price, soldOut
         }];
     }
 }
@@ -129,7 +132,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 function addMapClickListeners() {
-    const mapLinks = new Set();
+    const mapLinks = [];
 
     const mapIds = [
         'b_google_map_thumbnail',
@@ -140,7 +143,13 @@ function addMapClickListeners() {
     mapIds.forEach((mapId) => {
         const mapLink = document.getElementById(mapId);
         if (mapLink) {
-            mapLinks.add({ link: mapLink });
+            mapLinks.push({ link: mapLink });
+        }
+    });
+
+    [...document.querySelectorAll('a.show_map')].forEach((mapLink) => {
+        if (!mapIds.includes(mapLink.getAttribute('id'))) {
+            mapLinks.push({ link: mapLink });
         }
     });
 
@@ -149,7 +158,7 @@ function addMapClickListeners() {
         const hotelId = hotelHtml.getAttribute('data-hotelid');
         const mapLink = hotelHtml.querySelector('.bui-link');
         if (mapLink) {
-            mapLinks.add({ link: mapLink, hotelId });
+            mapLinks.push({ link: mapLink, hotelId });
         }
     });
 

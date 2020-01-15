@@ -26,6 +26,7 @@ function importHotels(hotels, targetMap, api, setProgress=console.log) {
         hotel.soldOut ? categorySoldOut : categoryDefault,
         hotel.lon,
         hotel.lat,
+        hotel.id,
         hotel.img,
         hotel.name,
         hotel.place,
