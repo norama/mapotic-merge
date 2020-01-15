@@ -92,9 +92,13 @@ const Merge = ({ api, targetMap }) => {
             setProgress({ collecting: 100, importing: 100 });
 
             if (importId) {
-                toast.success('' + places.length + ' places added.');
+                toast.success('' + places.length + ' places added.', {
+                    position: toast.POSITION.BOTTOM_LEFT
+                });
             } else {
-                toast.warn('No places added.');
+                toast.warn('No places added.', {
+                    position: toast.POSITION.BOTTOM_LEFT
+                });
             }
         }).finally(() => {
             setLoading(false);
