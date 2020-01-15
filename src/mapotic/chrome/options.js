@@ -5,7 +5,8 @@ import config from './config.js';
 const DEFAULT_OPTIONS = {
     distance: 50,
     display: "tab",
-    collections: config.collections.map((collection) => (collection.name))
+    collections: config.collections.map((collection) => (collection.name)),
+    mapoticForBooking: true
 };
 
 function showLoginForm() {
@@ -19,9 +20,10 @@ function showOptionsForm() {
 }
 
 function initFromStorage() {
-    chrome.storage.sync.get(["collections", "distance", "display", "email", "mapoticAuth"], function(stored) {
+    chrome.storage.sync.get(["collections", "distance", "display", "mapoticForBooking", "email", "mapoticAuth"], function(stored) {
         const options = stored.mapoticAuth ? stored : DEFAULT_OPTIONS;
         document.getElementById("distanceInput").value = options.distance;
+        document.getElementById("mapoticForBookingInput").checked = !!options.mapoticForBooking;
         document.getElementById("newTab").checked = (options.display !== "window");
         document.getElementById("newWindow").checked = (options.display === "window");
         document.getElementById("userEmail").innerText = options.email ? options.email : "";
@@ -53,11 +55,13 @@ function setSaveHandler() {
         }, []);
         const distance = document.getElementById("distanceInput").value;
         const newTab = document.getElementById("newTab").checked;
+        const mapoticForBooking = document.getElementById("mapoticForBookingInput").checked;
 
         chrome.storage.sync.set({
             collections,
             distance,
-            display: newTab ? "tab" : "window"
+            display: newTab ? "tab" : "window",
+            mapoticForBooking
         }, function () {
             window.close();
         });
@@ -134,7 +138,9 @@ function setLocalizedTexts() {
         "nature",
         "culture",
         "drinking",
-        "shopping"
+        "shopping",
+        "usage",
+        "mapoticForBooking"
     ];
     ids.forEach((id) => {
         document.getElementById(id).innerHTML = chrome.i18n.getMessage(id);

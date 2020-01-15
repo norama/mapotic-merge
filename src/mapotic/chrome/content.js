@@ -128,7 +128,7 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-document.addEventListener('DOMContentLoaded', function() {
+function addMapClickListeners() {
     const mapLinks = new Set();
 
     const mapIds = [
@@ -159,5 +159,13 @@ document.addEventListener('DOMContentLoaded', function() {
             event.stopPropagation();
             chrome.runtime.sendMessage({ message: 'clicked_map', hotelId: mapLink.hotelId });
         });
-    })
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    chrome.storage.sync.get(["mapoticForBooking"], function(stored) {
+        if (stored.mapoticForBooking) {
+            addMapClickListeners();
+        }
+    });
 });

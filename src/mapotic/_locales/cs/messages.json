@@ -55,5 +55,11 @@
     },
     "shopping": {
         "message": "nákup"
+    },
+    "usage": {
+        "message": "Používat"
+    },
+    "mapoticForBooking": {
+        "message": "Mapotic mapy na booking.com"
     }
 }

@@ -2,10 +2,7 @@
     <head>
         <style>
             body {
-                width: 440px;
-            }
-            fieldset {
-                margin-top: 1em;
+                width: 460px;
             }
             fieldset:first-child {
                 margin-top: 0;
@@ -20,9 +17,9 @@
                 margin: auto;
             }
             .item .textInput {
-                width: 400px;
-                height: 40px;
-                padding: 5px;
+                width: 200px;
+                height: 30px;
+                padding: 3px;
             }
             .item .inputLabel {
                 margin-bottom: 3px;
@@ -31,6 +28,9 @@
                 display: flex;
                 flex-flow: row;
                 justify-content: space-around;
+            }
+            #collectionsFieldset {
+                margin-top: 0;
             }
             #collectionsFieldset .item {
                 width: 120px;
@@ -142,25 +142,36 @@
                     </div>
                 </div>
             </fieldset>
-            <fieldset>
+
+            <div class="row">
                 <div class="item">
                     <div class="itemBox">
                         <div id="distance" class="inputLabel"></div>
                         <input type="number" min="1" id="distanceInput" class="textInput" required>
                     </div>
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend id="openedIn"></legend>
-                <div class="item">
-                    <input type="radio" name="sign" id="newTab">
-                    <label for="newTab" id="inNewTab"></label>
-                </div>
-                <div class="item">
-                    <input type="radio" name="sign" id="newWindow">
-                    <label for="newWindow" id="inNewWindow"></label>
-                </div>
-            </fieldset>
+            </div>
+
+            <div class="row">
+                <fieldset>
+                    <legend id="openedIn"></legend>
+                    <div class="item">
+                        <input type="radio" name="sign" id="newTab">
+                        <label for="newTab" id="inNewTab"></label>
+                    </div>
+                    <div class="item">
+                        <input type="radio" name="sign" id="newWindow">
+                        <label for="newWindow" id="inNewWindow"></label>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend id="usage"></legend>
+                    <div class="item">
+                        <input type="checkbox" id="mapoticForBookingInput">
+                        <label for="mapoticForBookingInput" id="mapoticForBooking"></label>
+                    </div>
+                </fieldset>
+            </div>
             <div class="footer">
                 <button id="save"></button>
             </div>

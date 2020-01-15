@@ -57,5 +57,11 @@
     },
     "shopping": {
         "message": "shopping"
+    },
+    "usage": {
+        "message": "Use"
+    },
+    "mapoticForBooking": {
+        "message": "Mapotic maps on booking.com"
     }
 }
