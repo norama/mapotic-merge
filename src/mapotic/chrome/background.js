@@ -5,10 +5,10 @@ import importHotels from './importHotels.js';
 import loadSources from './loadSources.js';
 import importPlaces from './importPlaces.js';
 
-function doInCurrentTab(tabCallback) {
+function doInCurrentTab(tabCallback, param) {
     chrome.tabs.query(
         { currentWindow: true, active: true },
-        function (tabArray) { tabCallback(tabArray[0]); }
+        function (tabArray) { tabCallback(tabArray[0], param); }
     );
 }
 
@@ -119,8 +119,9 @@ function map(hotels, callback) {
     });
 }
 
-function main(tab) {
-    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url), url: tab.url }, (hotels) => {
+function main(tab, hotelId) {
+    console.log('---> hotelId', hotelId);
+    chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url), url: tab.url, hotelId }, (hotels) => {
         chrome.pageAction.hide(tab.id);
 
         console.log('hotels', hotels);
@@ -138,7 +139,7 @@ chrome.pageAction.onClicked.addListener(main);
 chrome.runtime.onMessage.addListener(
     function(request) {
         if (request.message === 'clicked_map') {
-            doInCurrentTab(main);
+            doInCurrentTab(main, request.hotelId);
         }
     }
 );

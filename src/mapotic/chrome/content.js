@@ -50,10 +50,10 @@ class Scraper {
         this.url = url;
     }
 
-    scrape() {
+    scrape(hotelId) {
         switch (this.type) {
             case "searchresults":
-                return this.scrapeSearchResults();
+                return this.scrapeSearchResults(hotelId);
             case "hotel":
                 return this.scrapeHotel();
             default:
@@ -61,8 +61,11 @@ class Scraper {
         }
     }
 
-    scrapeSearchResults() {
-        const hotelsHtml = [...document.querySelectorAll('div.sr_item')];
+    scrapeSearchResults(hotelId) {
+        const hotelsHtml = hotelId ?
+            [document.querySelector(`div.sr_item[data-hotelid="${hotelId}"]`)] :
+            [...document.querySelectorAll('div.sr_item')];
+
         const hotelsData = hotelsHtml.map((hotelHtml) => {
             const link = hotelHtml.querySelector('a.sr_item_photo_link.sr_hotel_preview_track');
             const url = "https://www.booking.com" + link.getAttribute('href');
@@ -120,7 +123,7 @@ chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.message === "clicked_page_action" ) {
             console.log('type', request.type);
-            const hotels = new Scraper(request.type, request.url).scrape();
+            const hotels = new Scraper(request.type, request.url).scrape(request.hotelId);
             console.log(hotels);
             sendResponse(hotels);
         }
@@ -128,31 +131,35 @@ chrome.runtime.onMessage.addListener(
 );
 
 document.addEventListener('DOMContentLoaded', function() {
+    const mapLinks = new Set();
+
     const mapIds = [
         'b_google_map_thumbnail',
         'map-header-cta',
-        'hotel_sidebar_static_map'
+        'hotel_sidebar_static_map',
+        'hotel_header'
     ];
-    const mapClassName = 'bui-link';
-
-    let mapLinks = new Set();
-
     mapIds.forEach((mapId) => {
         const mapLink = document.getElementById(mapId);
         if (mapLink) {
-            mapLinks.add(mapLink);
+            mapLinks.add({ link: mapLink });
         }
     });
 
-    [...document.getElementsByClassName(mapClassName)].forEach((mapLink) => {
-        mapLinks.add(mapLink);
+    const hotelsHtml = [...document.querySelectorAll('div.sr_item')];
+    hotelsHtml.forEach((hotelHtml) => {
+        const hotelId = hotelHtml.getAttribute('data-hotelid');
+        const mapLink = hotelHtml.querySelector('.bui-link');
+        if (mapLink) {
+            mapLinks.add({ link: mapLink, hotelId });
+        }
     });
 
     mapLinks.forEach((mapLink) => {
-        mapLink.addEventListener('click', function(event) {
+        mapLink.link.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
-            chrome.runtime.sendMessage({ message: 'clicked_map' });
+            chrome.runtime.sendMessage({ message: 'clicked_map', hotelId: mapLink.hotelId });
         });
     })
 });
