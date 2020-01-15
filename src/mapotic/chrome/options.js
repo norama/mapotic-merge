@@ -88,7 +88,6 @@ function setLoginHandler() {
 
         login(email, password, onError).then((mapoticAuth) => {
             if (mapoticAuth) {
-                console.log('auth', mapoticAuth);
                 chrome.storage.sync.set({
                     email,
                     mapoticAuth,

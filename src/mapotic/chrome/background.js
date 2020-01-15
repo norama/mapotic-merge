@@ -63,7 +63,6 @@ function placesToMap(areas, stored, callback) {
         };
 
         loadSources(stored.collections, new Api(stored.mapoticAuth)).then((sources) => {
-            console.log('sources', sources);
 
             updateProgress({ progress: 2, message: "importing places"});
 
@@ -89,11 +88,9 @@ function map(hotels, callback) {
         if (!stored.targetMap) {
             const api = new Api(stored.mapoticAuth);
             createTargetMap(api).then(({ targetMap, attributes }) => {
-                console.log('targetMap', targetMap);
                 attributes = attributes.map((attr) => (
                     { id: attr.id, name: attr.name.en }
                 ));
-                console.log('attributes', attributes);
                 chrome.storage.sync.set({
                     targetMap: {
                         id: targetMap.id,
@@ -120,11 +117,8 @@ function map(hotels, callback) {
 }
 
 function main(tab, hotelId) {
-    console.log('---> hotelId', hotelId);
     chrome.tabs.sendMessage(tab.id, { message: 'clicked_page_action', type: bookingType(tab.url), url: tab.url, hotelId }, (hotels) => {
         chrome.pageAction.hide(tab.id);
-
-        console.log('hotels', hotels);
 
         if (hotels && hotels.length) {
             map(hotels, () => {

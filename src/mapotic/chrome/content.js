@@ -122,9 +122,7 @@ class Scraper {
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.message === "clicked_page_action" ) {
-            console.log('type', request.type);
             const hotels = new Scraper(request.type, request.url).scrape(request.hotelId);
-            console.log(hotels);
             sendResponse(hotels);
         }
     }

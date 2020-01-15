@@ -23,7 +23,6 @@ function selectedCategories(selectedCategoryNames, categories) {
 function loadSource(source, api) {
     const sourceMapSlug = slug(source.map);
     return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
-        console.log('sourceMap', map);
         const mapotic = new Mapotic(api, map.id);
         return mapotic.loadMap(sourceMapSlug).then((sourceMap) => ({
             map: { ...sourceMap, url: source.map },

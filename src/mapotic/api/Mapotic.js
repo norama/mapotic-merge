@@ -30,11 +30,8 @@ class Mapotic {
 
     loadMap = (slug) => {
         return this.loadAttributes().then((attributes) => {
-            console.log('attributes', attributes);
             return this.loadCategories().then((categories) => {
-                console.log('categories', categories);
                 return this.loadPlaces().then((places) => {
-                    console.log('places', places);
                     return { attributes, categories, places, slug, id: this.mapId };
                 });
             });
@@ -199,7 +196,6 @@ class Mapotic {
 
         fd.append('source_file', new File([toCsv(data)], 'data.csv'));
         return this.api.postDataSource(importBaseUrl, fd).then((response) => {
-            console.log('DataSource posted', response);
             if (!response) {
                 return null;
             }
@@ -208,12 +204,10 @@ class Mapotic {
                 definition
             }).then(() => {
                 return this.api.getJson(importBaseUrl + '/' + importId + '/analyze/').then((response) => {
-                    console.log('analyze', response);
                     if (response && response.allow_import && (response.content_errors.length === 0) && (response.definition_errors.length === 0)) {
                         return this.api.postJson(importBaseUrl + '/' + importId + '/start/').then(() => new Promise((resolve) => {
                             const statusInterval = setInterval(() => {
                                 this.api.getJson(importBaseUrl + '/' + importId + '/status/').then((response) => {
-                                    console.log('status', response);
                                     setProgress({ collecting: 100, importing: response.progress });
                                     if (response.progress === 100) {
                                         clearInterval(statusInterval);
@@ -234,11 +228,10 @@ class Mapotic {
 
         return this.fetchPlaces(places, sourceMap.id, setProgress).then((places) => {
             setProgress({ collecting: 100, importing: 0 });
-            console.log('places', places);
             const p = new Places(places, sourceMap.id, sourceMap.slug, attributeMap);
             const d = p.forImport();
-            console.log('definition', d.definition);
-            console.log('data', d.data);
+            //console.log('definition', d.definition);
+            //console.log('data', d.data);
             return this.doImport(d.definition, d.data, setProgress);
         });
     };
@@ -248,9 +241,7 @@ class Mapotic {
         const areas = toArray(area).map((a) => ({ ...a, dist2: a.dist * a.dist }));
 
         return this.loadAttributes().then((targetAttributes) => {
-            console.log('targetAttributes', targetAttributes);
             return this.loadCategories().then((targetCategories) => {
-                console.log('targetCategories', targetCategories);
                 return this.mergeAttributes(sourceMap.attributes, targetAttributes, targetCategories).then(({
                     attributes,
                     attributeMap
@@ -261,10 +252,8 @@ class Mapotic {
                     )));
                     return this.mergeCategories(newCategories, attributes, attributeMap).then((addedCategories) => {
                         setProgress({ collecting: 20, importing: 0 });
-                        console.log('Missing categories added.', addedCategories);
 
                         const places = this.filterPlaces(sourceMap.places, selectedCategories, areas);
-                        console.log('places to be added', places);
 
                         if (places.length) {
                             return this.mergePlaces(places, sourceMap, attributeMap, setProgress).then((importId) => {

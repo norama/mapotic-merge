@@ -6,8 +6,6 @@ import { slug } from '../api/util/data.js';
 function importPlaces(sources, areas, targetMap, api, updateProgress) {
     const mapotic = new Mapotic(api, targetMap.id);
 
-    console.log('sources', sources);
-
     const mergeSource = (index) => (
         new Promise((resolve) => {
             const source = sources[index];

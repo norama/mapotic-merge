@@ -43,7 +43,6 @@ const Merge = ({ api, targetMap }) => {
 
     const loadSource = (sourceMapSlug) => {
         return api.getJson('/maps/by-slug/' + sourceMapSlug + '/').then((map) => {
-            console.log('sourceMap', map);
             const mapotic = new Mapotic(api, map.id);
             return mapotic.loadMap(sourceMapSlug).then(setSourceMap);
         });
@@ -89,8 +88,6 @@ const Merge = ({ api, targetMap }) => {
             places,
             importId
         }) => {
-            console.log('Categories added: ' + addedCategories.map((category) => (category.name.en)));
-
             setImportId(importId);
             setProgress({ collecting: 100, importing: 100 });
 
