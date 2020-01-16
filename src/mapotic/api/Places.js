@@ -1,6 +1,7 @@
 import { BASE_DEFINITION, PARENT_ATTRIBUTE } from './Constants.js';
 
 import { attributeEqual } from './util/equal.js';
+import { placeUrl } from './util/url.js';
 
 class Places {
 
@@ -79,7 +80,7 @@ class Places {
     }
 
     parentLink(place) {
-        return 'https://www.mapotic.com/' + this.mapSlug + '/' + place.id + '-' + place.slug;
+        return placeUrl(place, this.mapSlug);
     }
 
     forImport() {

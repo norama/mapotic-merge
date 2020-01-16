@@ -4,6 +4,8 @@ import importHotels from './importHotels.js';
 
 import loadSources from './loadSources.js';
 import importPlaces from './importPlaces.js';
+import getHotelUrl from './getHotelUrl.js';
+import { mapUrl } from '../api/util/url.js';
 
 function doInCurrentTab(tabCallback, param) {
     chrome.tabs.query(
@@ -26,17 +28,27 @@ chrome.runtime.onInstalled.addListener(function() {
     console.log('mapotic booking installed');
 });
 
-function openMap(targetMap, display) {
-    const url = "https://www.mapotic.com/" + targetMap.slug;
-    if (display === "window") {
-        chrome.windows.create({ url });
+function handleError(error, title='ERROR') {
+    chrome.notifications.create({ title, message: error, iconUrl: "icons/icon48.png", type: "basic" });
+}
+ 
+function getUrl(targetMap, hotels, mapoticAuth) {
+    if (hotels.length === 1) {
+        const api = new Api(mapoticAuth, handleError);
+        return getHotelUrl(targetMap, hotels[0], api);
     } else {
-        chrome.tabs.create({ url });
+        return  Promise.resolve(mapUrl(targetMap.slug));
     }
 }
 
-function handleError(error, title='ERROR') {
-    chrome.notifications.create({ title, message: error, iconUrl: "icons/icon48.png", type: "basic" });
+function openMap(stored, hotels) {
+    getUrl(stored.targetMap, hotels, stored.mapoticAuth).then((url) => {
+        if (stored.display === "window") {
+            chrome.windows.create({ url });
+        } else {
+            chrome.tabs.create({ url });
+        }
+    });
 }
 
 function hotelsToMap(hotels, stored, callback) {
@@ -78,7 +90,7 @@ function placesToMap(areas, stored, callback) {
             handleError('Could not load sources.', 'Try to change collections in options.');
         }).finally(() => {
             chrome.notifications.clear(notificationId);
-            callback()
+            callback();
         });
     });
 }
@@ -109,7 +121,7 @@ function map(hotels, callback) {
             const areas = hotels.map((hotel) => ({ lat: hotel.lat, lon: hotel.lon, dist: stored.distance }));
 
             hotelsToMap(hotels, stored, () => (placesToMap(areas, stored, () => {
-                openMap(stored.targetMap, stored.display);
+                openMap(stored, hotels);
                 callback();
             })));
         }

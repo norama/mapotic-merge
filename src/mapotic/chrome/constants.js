@@ -1,3 +1,12 @@
+export const HOTEL_ATTRIBUTE = {
+    attribute_type: "number",
+    icon: "im-map-pin",
+    name: { en: "__Hotel__" },
+    permission: "user",
+    is_required: false,
+    settings: {}
+};
+
 export const ATTRIBUTES = [{
     attribute_type: "inputtext",
     icon: "im-bus-stop",
@@ -26,7 +35,7 @@ export const ATTRIBUTES = [{
     permission: "user",
     is_required: false,
     settings: {}
-}];
+}, HOTEL_ATTRIBUTE];
 
 export const CATEGORIES = [{
     name: { en: "Hotel" },

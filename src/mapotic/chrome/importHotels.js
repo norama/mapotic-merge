@@ -31,7 +31,8 @@ function importHotels(hotels, targetMap, api, setProgress=console.log) {
         hotel.name,
         hotel.place,
         hotel.url,
-        hotel.price
+        hotel.price,
+        hotel.id
     ]));
 
     const mapotic = new Mapotic(api, targetMap.id);
