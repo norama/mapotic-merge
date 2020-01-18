@@ -46,7 +46,7 @@ class Places {
 
     // TODO
     rating(place) {
-        return place.rating.average ? Math.round(place.rating.average) : 1
+        return place.rating && place.rating.average ? Math.round(place.rating.average) : 1
     }
 
     image(place) {

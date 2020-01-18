@@ -167,15 +167,15 @@ class Mapotic {
         ));
     };
 
+    fetchPlace = (place, baseUrl, d, setProgress) => (this.api.getJson(baseUrl + place.properties.id + '/').then((response) => {
+        setProgress((progress) => ({ collecting: progress.collecting + d, importing: 0 }));
+        return response;
+    }));
+
     fetchPlaces = (sourcePlaces, sourceMapId, setProgress) => {
         const d = Math.floor(80 / sourcePlaces.length);
         const baseUrl = '/maps/' + sourceMapId + '/public-pois/';
-        return Promise.all(sourcePlaces.map((place) => (
-            this.api.getJson(baseUrl + place.properties.id + '/').then((response) => {
-                setProgress((progress) => ({ collecting: progress.collecting + d, importing: 0 }));
-                return response;
-            })
-        )));
+        return chain((index) => (this.fetchPlace(sourcePlaces[index], baseUrl, d, setProgress)), sourcePlaces.length);
     };
 
     filterPlaces = (sourcePlaces, categories, areas) => {
