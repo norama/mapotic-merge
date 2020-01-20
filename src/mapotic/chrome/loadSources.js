@@ -7,7 +7,7 @@ function selectedSources(collections) {
     const selected = config.collections.filter((collection) => (collections.includes(collection.name)));
     return selected.reduce((acc, curr) => {
         curr.sources.forEach((source) => {
-            acc.push({ ...source, name: curr.name });
+            acc.push({ ...source, name: curr.name, color: source.color ? source.color : curr.color });
         });
         return acc;
     }, []);
@@ -27,7 +27,7 @@ function loadSource(source, api) {
         return mapotic.loadMap(sourceMapSlug).then((sourceMap) => ({
             map: { ...sourceMap, url: source.map },
             name: source.name,
-            selectedCategories: selectedCategories(source.categories, sourceMap.categories)
+            selectedCategories: selectedCategories(source.categories, sourceMap.categories).map((cat) => ({ ...cat, color: source.color ? source.color : cat.color }))
         }));
     });
 };

@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 
 import { toast } from 'react-toastify';
 
-import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Progress } from 'reactstrap';
 
 import Area from './Area';
@@ -27,6 +27,8 @@ const Merge = ({ api, targetMap }) => {
     const [ area, setArea ] = useState(cookies.mapoticArea ? cookies.mapoticArea : DefaultArea);
     const [ importId, setImportId ] = useState(null);
     const [ progress, setProgress ] = useState(null);
+    const [ customPinColor, setCustomPinColor ] = useState(false);
+    const [ pinColor, setPinColor ] = useState('#AAAAAA');
 
     const handleSourceMapUrlChange = (event) => {
         setSourceMapUrl(event.target.value);
@@ -34,6 +36,14 @@ const Merge = ({ api, targetMap }) => {
         setSelectedCategories([]);
         setProgress(null);
     };
+
+    const handleCustomPinColorChange = (event) => {
+        setCustomPinColor(event.target.checked);
+    }
+
+    const handlePinColorChange = (event) => {
+        setPinColor(event.target.value);
+    }
 
     const handleCategoriesChange = (event) => {
         setSelectedCategories([...event.target.selectedOptions].map((option) => (
@@ -77,6 +87,7 @@ const Merge = ({ api, targetMap }) => {
         mapotic.merge(
             sourceMap,
             selectedCategories,
+            customPinColor ? pinColor : null,
             area,
             setProgress
         ).then((response) => (
@@ -125,12 +136,21 @@ const Merge = ({ api, targetMap }) => {
                     <h5 id="targetMap"><a href={targetMap.url} target="_blank" rel="noopener noreferrer">{targetMap.name}</a></h5>
                 </FormGroup>
 
-                <Area area={area} onChange={setArea} /> 
+                <Area area={area} onChange={setArea} />
 
                 <FormGroup className="sourceMapUrl">
                     <InputGroup>
                         <Input type="url" name="sourceMapUrl" value={sourceMapUrl} onChange={handleSourceMapUrlChange} onKeyPress={handleKeyPress} id="sourceMapUrl" placeholder="source map URL" disabled={loading} />
                         <InputGroupAddon addonType="append"><Button onClick={handleLoad} disabled={loading}>Load categories</Button></InputGroupAddon>
+                    </InputGroup>
+                    
+                    <InputGroup className="color">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <Input addon type="checkbox" checked={customPinColor} onChange={handleCustomPinColorChange} disabled={loading} aria-label="Checkbox for following input" title="check to select custom pin color" />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="color" id="color" value={pinColor} onChange={handlePinColorChange} disabled={!customPinColor || loading} title="Pin color" />
                     </InputGroup>
                 </FormGroup>
 

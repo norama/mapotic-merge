@@ -97,13 +97,24 @@ class Mapotic {
         }));
     };
 
-    mergeCategories = (categories, attributes, attributeMap) => {
+    normalizeColor = (color) => {
+        if (!color) {
+            return null;
+        }
+        if (color.startsWith('#')) {
+            return color.substring(1);
+        }
+        return color;
+    };
+
+    mergeCategories = (categories, color, attributes, attributeMap) => {
         const categoryBaseUrl = '/maps/' + this.mapId + '/categories/';
+        color = this.normalizeColor(color);
 
         const postCategory = (category) => (
             this.api.postJson(categoryBaseUrl, {
                 name: { en: category.name.en.trim() },
-                color: category.color,
+                color: color ? color : category.color,
                 icon: category.icon
             })
         );
@@ -214,7 +225,7 @@ class Mapotic {
                                         resolve(importId);
                                     }
                                 });
-                            }, 1000);
+                            }, 3000);
                         }));
                     } else {
                         return null;
@@ -236,7 +247,7 @@ class Mapotic {
         });
     };
 
-    merge = (sourceMap, selectedCategories, area, setProgress) => {
+    merge = (sourceMap, selectedCategories, color, area, setProgress) => {
 
         const areas = toArray(area).map((a) => ({ ...a, dist2: a.dist * a.dist }));
 
@@ -250,7 +261,7 @@ class Mapotic {
                     const newCategories = selectedCategories.filter((sourceCategory) => (
                         !targetCategories.find((targetCategory) => (categoryEqual(targetCategory, sourceCategory))
                     )));
-                    return this.mergeCategories(newCategories, attributes, attributeMap).then((addedCategories) => {
+                    return this.mergeCategories(newCategories, color, attributes, attributeMap).then((addedCategories) => {
                         setProgress({ collecting: 20, importing: 0 });
 
                         const places = this.filterPlaces(sourceMap.places, selectedCategories, areas);

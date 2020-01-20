@@ -1,7 +1,6 @@
 export function categoryEqual(cat1, cat2) {
     return cat1.name.en.trim() === cat2.name.en.trim() &&
-        cat1.icon === cat2.icon &&
-        cat1.color === cat2.color;
+        cat1.icon === cat2.icon;
 }
 
 function empty(x) {

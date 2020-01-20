@@ -1,6 +1,7 @@
 const config = {
     collections: [{
         name: "swimming",
+        color: "ED57F9",
         sources: [{
             map: "https://www.mapotic.com/sauny"
         }, {
@@ -22,6 +23,7 @@ const config = {
     }, {
         name: "culture",
         sources: [{
+            color: "E6F95C",
             map: "https://www.mapotic.com/praha-galerie"
         }, {
             map: "https://www.mapotic.com/festivals-europe"
