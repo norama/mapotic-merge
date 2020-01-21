@@ -186,7 +186,7 @@ class Mapotic {
     fetchPlaces = (sourcePlaces, sourceMapId, setProgress) => {
         const d = Math.floor(80 / sourcePlaces.length);
         const baseUrl = '/maps/' + sourceMapId + '/public-pois/';
-        return chain((index) => (this.fetchPlace(sourcePlaces[index], baseUrl, d, setProgress)), sourcePlaces.length);
+        return chain((index) => (this.fetchPlace(sourcePlaces[index], baseUrl, d, setProgress)), sourcePlaces.length, 8);
     };
 
     filterPlaces = (sourcePlaces, categories, areas) => {
