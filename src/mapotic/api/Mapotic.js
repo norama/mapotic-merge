@@ -144,19 +144,24 @@ class Mapotic {
                     attributeIds.push(parentAttribute.id);
                 }
 
-                // delete unnecessary attributes, fix positions of the remaining ones
-                const delAttributeIds = newCategory.attributes.filter((a) => (!attributeIds.includes(a)));
-                return Promise.all(delAttributeIds.map((attrId) => (
-                    this.api.deleteJson(categoryBaseUrl + newCategory.id + '/attributes/' + attrId +'/')
-                ))).then(() => {
-                    return Promise.all(attributeIds.map((attrId, index) => (
-                        this.api.putJson(categoryBaseUrl + newCategory.id + '/attributes/' + attrId +'/', { position: index })
-                    ))).then(() => (newCategory));
-                });
+                return this.fixCategoryAttributes(newCategory, attributeIds);
             }))
 
         ));
     };
+
+    // delete unnecessary attributes, fix positions of the remaining ones
+    fixCategoryAttributes = (category, attributeIds) => {
+        const attributeBaseUrl = '/maps/' + this.mapId + '/categories/' + category.id + '/attributes/';
+        const delAttributeIds = category.attributes.filter((a) => (!attributeIds.includes(a)));
+        return Promise.all(delAttributeIds.map((attrId) => (
+            this.api.deleteJson(attributeBaseUrl + attrId +'/')
+        ))).then(() => {
+            return Promise.all(attributeIds.map((attrId, index) => (
+                this.api.putJson(attributeBaseUrl + attrId +'/', { position: index })
+            ))).then(() => (category));
+        });
+    }
 
     filterPlacesByCategories = (sourcePlaces, categories) => {
         if (categories.length === 1) {
