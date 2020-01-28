@@ -5,6 +5,15 @@
     "application_description": {
       "message": "Ukazuje ubytování z booking.com na Mapotic mapách. IMPORTANT: on chrome://flags page set 'Enable native notifications' to Disabled."
     },
+    "mapoticTargetMap": {
+        "message": "Mapotic cílová mapa"
+    },
+    "customTargetMap": {
+        "message": "Používat konkrétní mapu"
+    },
+    "targetMapUrl": {
+        "message": "URL cílové mapy"
+    },
     "mapoticLogin": {
         "message": "Mapotic přihlášení"
     },

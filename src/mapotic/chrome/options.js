@@ -6,12 +6,16 @@ const DEFAULT_OPTIONS = {
     distance: 50,
     display: "tab",
     collections: config.collections.map((collection) => (collection.name)),
-    mapoticForBooking: true
+    mapoticForBooking: true,
+    customTargetMap: false
 };
 
-function showLoginForm() {
+function showLoginForm(customTargetMap) {
     document.getElementById("loginForm").style.display = "block";
     document.getElementById("optionsForm").style.display = "none";
+    document.getElementById("targetMapUrlInput").style.visibility = customTargetMap ? "visible" : "hidden";
+    document.getElementById("targetMapUrlInput").required = customTargetMap ? true : false;
+    document.getElementById("targetMapUrl").style.visibility = customTargetMap ? "visible" : "hidden";
 }
 
 function showOptionsForm() {
@@ -20,12 +24,14 @@ function showOptionsForm() {
 }
 
 function initFromStorage() {
-    chrome.storage.sync.get(["collections", "distance", "display", "mapoticForBooking", "email", "mapoticAuth"], function(stored) {
+    chrome.storage.sync.get(["collections", "distance", "display", "mapoticForBooking", "customTargetMap", "targetMapUrl", "email", "mapoticAuth"], function(stored) {
         const options = stored.mapoticAuth ? stored : DEFAULT_OPTIONS;
         document.getElementById("distanceInput").value = options.distance;
         document.getElementById("mapoticForBookingInput").checked = !!options.mapoticForBooking;
         document.getElementById("newTab").checked = (options.display !== "window");
         document.getElementById("newWindow").checked = (options.display === "window");
+        document.getElementById("customTargetMapInput").checked = !!options.customTargetMap;
+        document.getElementById("targetMapUrlInput").innerText = options.targetMapUrl && options.customTargetMap ? options.targetMapUrl : "";
         document.getElementById("userEmail").innerText = options.email ? options.email : "";
         config.collections.forEach((collection) => {
             document.getElementById(collection.name + "Input").checked =
@@ -35,7 +41,7 @@ function initFromStorage() {
         if (stored.mapoticAuth) {
             showOptionsForm();
         } else {
-            showLoginForm();
+            showLoginForm(stored.customTargetMap);
         }
 
     });
@@ -79,6 +85,14 @@ function handleError(error) {
 }
 
 function setLoginHandler() {
+    document.getElementById("customTargetMapInput").addEventListener("change", function(event) {
+        const targetMapUrlInput = document.getElementById("targetMapUrlInput");
+        targetMapUrlInput.value = "";
+        targetMapUrlInput.style.visibility = event.target.checked ? "visible" : "hidden";
+        targetMapUrlInput.required = event.target.checked ? true : false;
+        document.getElementById("targetMapUrl").style.visibility = event.target.checked ? "visible" : "hidden";
+    });
+
     document.getElementById("login").addEventListener("click", function(event) {
         if (!document.getElementById("loginForm").checkValidity()) {
             return;
@@ -86,6 +100,8 @@ function setLoginHandler() {
 
         event.preventDefault();
 
+        const customTargetMap = document.getElementById("customTargetMapInput").checked;
+        const targetMapUrl = document.getElementById("targetMapUrlInput").value.trim();
         const email = document.getElementById("emailInput").value;
         const password = document.getElementById("passwordInput").value;
         const onError = handleError; //chrome.extension.getBackgroundPage().alert;
@@ -93,6 +109,8 @@ function setLoginHandler() {
         login(email, password, onError).then((mapoticAuth) => {
             if (mapoticAuth) {
                 chrome.storage.sync.set({
+                    customTargetMap,
+                    targetMapUrl,
                     email,
                     mapoticAuth,
                     ...DEFAULT_OPTIONS
@@ -123,6 +141,9 @@ function setCollectionsChangeHandler() {
 function setLocalizedTexts() {
     const ids = [
         "mapoticLogin",
+        "mapoticTargetMap",
+        "customTargetMap",
+        "targetMapUrl",
         "email",
         "password",
         "login",

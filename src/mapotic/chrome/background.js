@@ -1,4 +1,5 @@
 import Api from '../api/Api.js';
+import prepareTargetMap from './prepareTargetMap.js';
 import createTargetMap from './createTargetMap.js';
 import importHotels from './importHotels.js';
 
@@ -96,10 +97,16 @@ function placesToMap(areas, stored, callback) {
 }
 
 function map(hotels, callback) {
-    chrome.storage.sync.get(["mapoticAuth", "targetMap", "collections", "distance", "display"], function(stored) {
+    chrome.storage.sync.get(["mapoticAuth", "targetMap", "targetMapUrl", "collections", "distance", "display"], function(stored) {
         if (!stored.targetMap) {
             const api = new Api(stored.mapoticAuth);
-            createTargetMap(api).then(({ targetMap, attributes }) => {
+            const getTargetMap = () => (
+                stored.targetMapUrl ?
+                prepareTargetMap(stored.targetMapUrl, api) :
+                createTargetMap(api)
+            );
+
+            getTargetMap().then(({ targetMap, attributes }) => {
                 attributes = attributes.map((attr) => (
                     { id: attr.id, name: attr.name.en }
                 ));
@@ -115,7 +122,7 @@ function map(hotels, callback) {
                 });
             }).catch((error) => {
                 console.error(error);
-                handleError('Could not create target map.', 'Try to login again.');
+                handleError('Could not prepare target map.', 'Try to login again.');
             });
         } else {
             const areas = hotels.map((hotel) => ({ lat: hotel.lat, lon: hotel.lon, dist: stored.distance }));

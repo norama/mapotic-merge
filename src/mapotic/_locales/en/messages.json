@@ -10,6 +10,15 @@
     "mapoticLogin": {
         "message": "Mapotic login"
     },
+    "mapoticTargetMap": {
+        "message": "Mapotic target map"
+    },
+    "customTargetMap": {
+        "message": "Specific target map"
+    },
+    "targetMapUrl": {
+        "message": "Target map URL"
+    },
     "email": {
         "message": "E-mail"
     },

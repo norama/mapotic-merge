@@ -21,6 +21,15 @@
                 height: 30px;
                 padding: 3px;
             }
+            #targetMapFieldset {
+                margin-bottom: 20px;
+            }
+            #customTargetMapBox {
+                width: 400px;
+            }
+            #customTargetMap {
+                line-height: 1.6;
+            }
             #distanceInput {
                 width: 200px;
             }
@@ -89,6 +98,21 @@
     </head>
     <body>
         <form id="loginForm">
+            <fieldset id="targetMapFieldset">
+                <legend id="mapoticTargetMap"></legend>
+                <div class="item">
+                    <div class="itemBox" id="customTargetMapBox">
+                        <input type="checkbox" id="customTargetMapInput">
+                        <label for="customTargetMapInput" id="customTargetMap"></label>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="itemBox">
+                        <div id="targetMapUrl" class="inputLabel"></div>
+                        <input type="text" id="targetMapUrlInput" class="textInput">
+                    </div>
+                </div>
+            </fieldset>
             <fieldset>
                 <legend id="mapoticLogin"></legend>
                 <div class="item">
