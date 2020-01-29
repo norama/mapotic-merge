@@ -23,7 +23,8 @@
         "tabs",
         "storage",
         "notifications",
-        "https://www.mapotic.com/api/v1/*"
+        "https://www.mapotic.com/api/v1/*",
+        "https://www.testmapotic.com/api/v1/*"
     ],
     "options_ui": {
         "page": "chrome/options.html",

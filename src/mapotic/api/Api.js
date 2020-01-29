@@ -1,3 +1,5 @@
+import { MAPOTIC_API } from './util/url.js';
+
 export const handleError = (response, onError) => {
     if (onError) {
         if (response.status === 500) {
@@ -13,8 +15,6 @@ export const handleError = (response, onError) => {
         throw response;
     }
 };
-
-const MAPOTIC_API = "https://www.mapotic.com/api/v1";
 
 export function login(email, password, onError) {
     return fetch(MAPOTIC_API + '/auth/login/', {
